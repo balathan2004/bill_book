@@ -1,0 +1,17 @@
+.container {
+  min-height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+
+.home_container {
+
+    position: relative;
+    top: 80px;
+
+}
+
+.navbar{
+position: absolute;
+
+}

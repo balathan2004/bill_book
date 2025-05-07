@@ -1,29 +1,26 @@
 import React, { Component, ReactNode, useContext, useState } from "react";
+import { UserDataInterface } from "../utils/interfaces";
 
-interface NavItem {
-  email:string,
-  createdAt:number,
+type userType = UserDataInterface | null;
 
+interface UserContextType {
+  userCred: userType;
+  setUserCred: React.Dispatch<React.SetStateAction<userType>>;
 }
 
-interface NavbarContextType {
-  dirs: NavItem[];
-  setDirs: React.Dispatch<React.SetStateAction<NavItem[]>>;
-}
-
-const NavbarContext = React.createContext<NavbarContextType>({
-  dirs: [],
-  setDirs: () => {},
+const UserContext = React.createContext<UserContextType>({
+  userCred: null,
+  setUserCred: () => {},
 });
 
-export const NavbarHolder = ({ children }: { children: ReactNode }) => {
-  const [dirs, setDirs] = useState<NavItem[]>([]);
+export const UserHolder = ({ children }: { children: ReactNode }) => {
+  const [userCred, setUserCred] = useState<userType>(null);
 
   return (
-    <NavbarContext.Provider value={{ dirs, setDirs }}>
+    <UserContext.Provider value={{ userCred, setUserCred }}>
       {children}
-    </NavbarContext.Provider>
+    </UserContext.Provider>
   );
 };
 
-export const useUserContext=()=>useContext(NavbarContext)
+export const useUserContext = () => useContext(UserContext);

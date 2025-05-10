@@ -6,6 +6,7 @@ import {
 import { setCookie } from "cookies-next";
 import { firestore } from "@/components/utils/config";
 import { getDoc, doc, setDoc } from "firebase/firestore";
+
 export default async function (
   req: NextApiRequest,
   res: NextApiResponse<AuthResponseConfig>

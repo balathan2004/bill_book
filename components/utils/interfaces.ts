@@ -7,12 +7,8 @@ export interface AuthResponseConfig extends ResponseConfig {
   credentials: UserDataInterface;
 }
 
-export interface PostResponseConfig extends ResponseConfig {
-  postData: [] | null;
-}
-
-export interface SinglePostResponseConfig extends ResponseConfig {
-  postData: null;
+export interface docResponseConfig extends ResponseConfig {
+  docData: docInterface[];
 }
 
 export interface UserDataInterface {
@@ -30,3 +26,14 @@ export const dummyCred = {
   created_at: 0,
   profile_url: "",
 };
+
+export interface docInterface {
+  uid: string;
+  doc_id: string;
+  name: string;
+  //  type: string;
+  created_at: number;
+  price: number;
+  quantity: number;
+  gross_price: number;
+}

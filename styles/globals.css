@@ -5,13 +5,10 @@
 }
 
 .home_container {
-
-    position: relative;
-    top: 80px;
-
+  position: relative;
+  top: 80px;
 }
 
-.navbar{
-position: absolute;
-
+.navbar {
+  position: absolute;
 }

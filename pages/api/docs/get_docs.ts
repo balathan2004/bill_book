@@ -32,7 +32,8 @@ export default async function (
   }
 
   const docData = docFetch.data().data as docInterface[];
+  const sorted = [...docData].sort((a, b) => b.created_at - a.created_at);
 
-  res.json({ message: "docs fetched", status: 200, docData: docData });
+  res.json({ message: "docs fetched", status: 200, docData: sorted });
   return;
 }

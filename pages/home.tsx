@@ -9,32 +9,13 @@ import AddExpenseDoc from "@/components/elements/addExpenseDoc";
 import SingleCard from "@/components/elements/singleCard";
 import styles from "@/styles/home.module.css";
 
-function groupByTypeAndTime(docData: docInterface[]) {
-  // Group by type
-  const groupedByType = _.groupBy(docData, "name");
 
-  // Group by date (time) separately
-  const groupedByDate = _.groupBy(docData, (item) =>
-    new Date(item.created_at).toDateString()
-  );
-
-  return {
-    groupedByType,
-    groupedByDate,
-  };
-}
 
 export default function Home({ data }: { data: docInterface[] }) {
   const { userCred } = useUserContext();
   const [docData, setDocData] = useState<docInterface[]>(data);
 
-  // const { groupedByType, groupedByDate } = groupByTypeAndTime(docData);
 
-  const [isGroupedType, setIsGroupedType] = useState(false);
-
-  const handleToggle = () => {
-    setIsGroupedType((prev) => !prev);
-  };
 
   return (
     <div className="home_container">
@@ -46,11 +27,9 @@ export default function Home({ data }: { data: docInterface[] }) {
               <AddExpenseDoc userId={userCred?.uid} setDocData={setDocData} />
               <div className={styles.items_container}>
                 {docData.map((item) => (
-                  <SingleCard data={item} key={item.doc_id} />
+                  <SingleCard data={item} changeDocData={setDocData} key={item.doc_id} />
                 ))}
               </div>
-
-              <Button onClick={handleToggle}>Toggle Group</Button>
             </>
           ) : null}
         </div>

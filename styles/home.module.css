@@ -1,9 +1,11 @@
 .home {
   display: flex;
   justify-content: center;
+  width: 100%;
 }
 
 .center_container {
+  width: auto;
 }
 
 .items_container {
@@ -18,10 +20,17 @@
 
 .income_card {
   display: flex;
+  flex-direction: column;
   align-items: center;
   gap: 10px;
-  width: 600px;
+  width: 100%;
   margin: 1rem;
+}
+
+.card_top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .income_card img {
@@ -30,17 +39,36 @@
   border-radius: 50%;
 }
 
+.card_left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 300px;
+}
+
 .card_right {
   display: flex;
   flex: 1;
+  align-items: center;
   justify-content: space-between;
 }
 
-.card_vertical , .card_vertical_price {
+.card_vertical,
+.card_vertical_price {
   display: flex;
   flex-direction: column;
 }
 
-.card_vertical_price{
-    min-width: 200px;
+.card_vertical_price {
+  min-width: 200px;
 }
+
+
+.card_bottom {
+  width: 100%;
+}
+
+.card_bottom form {
+  display: flex;
+}
+

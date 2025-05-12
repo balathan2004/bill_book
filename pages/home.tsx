@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { Button } from "@mui/material";
-import _ from "lodash";
+import React, { useEffect, useState } from "react";
+import { Button, TextField } from "@mui/material";
+import _, { values } from "lodash";
 import { ParsedUrlQuery } from "querystring";
 import { GetServerSidePropsContext } from "next";
 import { docResponseConfig, docInterface } from "@/components/utils/interfaces";
@@ -9,13 +9,33 @@ import AddExpenseDoc from "@/components/elements/addExpenseDoc";
 import SingleCard from "@/components/elements/singleCard";
 import styles from "@/styles/home.module.css";
 
-
-
 export default function Home({ data }: { data: docInterface[] }) {
   const { userCred } = useUserContext();
   const [docData, setDocData] = useState<docInterface[]>(data);
+  const [showingDocs, setShowingDocs] = useState<docInterface[]>(data);
 
+  const handleInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
 
+    if (!value) {
+      setShowingDocs(docData);
+    }
+
+    const filtered = docData.filter((doc) => doc.name.includes(value));
+    setShowingDocs(filtered);
+  };
+
+  useEffect(() => {
+    if (docData.length > 0) setShowingDocs(docData);
+  }, [docData]);
+
+  const handleTotal=(docData:docInterface[])=>{
+
+    const total =docData.reduce((sum,item)=>sum+=item.gross_price,0)
+
+    return total;
+
+  }
 
   return (
     <div className="home_container">
@@ -26,9 +46,21 @@ export default function Home({ data }: { data: docInterface[] }) {
             <>
               <AddExpenseDoc userId={userCred?.uid} setDocData={setDocData} />
               <div className={styles.items_container}>
-                {docData.map((item) => (
-                  <SingleCard data={item} changeDocData={setDocData} key={item.doc_id} />
+                <TextField
+                  placeholder="search"
+                  fullWidth
+                  onChange={handleInput}
+                />
+                {showingDocs.map((item) => (
+                  <SingleCard
+                    data={item}
+                    changeDocData={setDocData}
+                    key={item.doc_id}
+                  />
                 ))}
+                <div>
+                  <p>total = {handleTotal(showingDocs)}</p>
+                </div>
               </div>
             </>
           ) : null}

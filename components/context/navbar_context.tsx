@@ -5,13 +5,13 @@ interface NavItem {
   path: string;
 }
 
-const NavInit: NavItem[] = [
+export const NavInit: NavItem[] = [
   { name: "home", path: "/home" },
   { name: "login", path: "/login" },
   { name: "about", path: "/about" },
 ];
 
-const NavUsers: NavItem[] = [
+export const NavUsers: NavItem[] = [
   { name: "home", path: "/home" },
   { name: "invoice", path: "/invoice" },
   { name: "download", path: "/download" },

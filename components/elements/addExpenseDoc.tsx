@@ -23,13 +23,18 @@ export default function AddExpenseDoc({ userId, setDocData }: Props) {
 
   const [singleDoc, setSingleDoc] = useState<docInterface>(initDoc);
 
+  const formatWithCommas = (val: number) => {
+    return val ? Number(val).toLocaleString("en-US") : val;
+  };
+
   const handleInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
+    const { name } = event.target;
+    const value = event.target.value.replace(/,/g, "");
 
     setSingleDoc((prev) => {
       const updatedDoc = {
         ...prev,
-        [name]: value,
+        [name]: (value),
       };
 
       const quantity = updatedDoc.quantity || 0;
@@ -59,7 +64,7 @@ export default function AddExpenseDoc({ userId, setDocData }: Props) {
     const res = (await response.json()) as ResponseConfig;
 
     if (res.status == 200) {
-      setDocData((prev) => [...prev, { ...singleDoc }]);
+      setDocData((prev) => [{ ...singleDoc },...prev]);
       setSingleDoc(initDoc);
     }
   };
@@ -82,8 +87,9 @@ export default function AddExpenseDoc({ userId, setDocData }: Props) {
           onChange={handleInput}
           name="quantity"
           placeholder="quantity"
-          type="number"
-          value={singleDoc?.quantity}
+          type="text"
+          sx={{ width: 150 }}
+          value={formatWithCommas(singleDoc?.quantity)}
         ></TextField>
         <TextField
           required
@@ -91,8 +97,9 @@ export default function AddExpenseDoc({ userId, setDocData }: Props) {
           onChange={handleInput}
           name="price"
           placeholder="price"
-          type="number"
-          value={singleDoc?.price}
+          type="text"
+          sx={{ width: 150 }}
+          value={formatWithCommas(singleDoc?.price)}
         ></TextField>
         <TextField
           required
@@ -100,8 +107,8 @@ export default function AddExpenseDoc({ userId, setDocData }: Props) {
           name="gross_price"
           placeholder="gross price"
           label="gross price"
-          type="number"
-          value={singleDoc?.gross_price}
+          type="text"
+          value={formatWithCommas(singleDoc?.gross_price)}
           disabled
         ></TextField>
         <Box>

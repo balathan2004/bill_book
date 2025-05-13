@@ -4,7 +4,7 @@ import {
   UserDataInterface,
 } from "@/components/utils/interfaces";
 import { setCookie } from "cookies-next";
-import { firestore } from "@/components/utils/config";
+import { firestore } from "@/config";
 import { getDoc, doc, setDoc } from "firebase/firestore";
 
 export default async function (

@@ -4,7 +4,7 @@ import { AuthResponseConfig, ResponseConfig } from "./interfaces";
 interface Props {
   data: Object;
   route: string;
-  credentials: boolean;
+  credentials?: boolean;
 }
 
 type ResponseInterfaces = ResponseConfig | AuthResponseConfig;

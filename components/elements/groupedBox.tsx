@@ -6,10 +6,4 @@ interface Props {
   name: string;
 }
 
-export default function GroupedBox({ data, name }: Props) {
-
-
-    
-
-}
-
+export default function GroupedBox({ data, name }: Props) {}

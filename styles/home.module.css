@@ -9,8 +9,9 @@
 }
 
 .items_container {
-  margin: 1rem 0;
+margin: 1rem 0;
 }
+
 
 .add_doc form {
   display: flex;
@@ -18,13 +19,25 @@
   gap: 5px;
 }
 
+.items_searchbar{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.items_searchbar select{
+  height: 100%;
+}
+
+
 .income_card {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 10px;
   width: 100%;
-  margin: 1rem;
+  margin: 1rem 0;
+  padding: 0;
 }
 
 .card_top {
@@ -34,9 +47,7 @@
 }
 
 .income_card img {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
+
 }
 
 .card_left {
@@ -44,6 +55,11 @@
   align-items: center;
   gap: 10px;
   min-width: 300px;
+}
+
+.card_name{
+  font-weight: 700;
+  text-transform: capitalize;
 }
 
 .card_right {

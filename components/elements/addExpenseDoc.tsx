@@ -10,6 +10,11 @@ interface Props {
   setDocData: React.Dispatch<React.SetStateAction<docInterface[]>>;
 }
 
+
+export const formatWithCommas = (val: number) => {
+  return val ? Number(val).toLocaleString("en-US") : val;
+};
+
 export default function AddExpenseDoc({ userId, setDocData }: Props) {
   const initDoc: docInterface = {
     doc_id: uuid.rnd(),
@@ -23,9 +28,7 @@ export default function AddExpenseDoc({ userId, setDocData }: Props) {
 
   const [singleDoc, setSingleDoc] = useState<docInterface>(initDoc);
 
-  const formatWithCommas = (val: number) => {
-    return val ? Number(val).toLocaleString("en-US") : val;
-  };
+
 
   const handleInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name } = event.target;
@@ -34,7 +37,7 @@ export default function AddExpenseDoc({ userId, setDocData }: Props) {
     setSingleDoc((prev) => {
       const updatedDoc = {
         ...prev,
-        [name]: (value),
+        [name]: value,
       };
 
       const quantity = updatedDoc.quantity || 0;
@@ -64,7 +67,7 @@ export default function AddExpenseDoc({ userId, setDocData }: Props) {
     const res = (await response.json()) as ResponseConfig;
 
     if (res.status == 200) {
-      setDocData((prev) => [{ ...singleDoc },...prev]);
+      setDocData((prev) => [{ ...singleDoc }, ...prev]);
       setSingleDoc(initDoc);
     }
   };
@@ -110,6 +113,7 @@ export default function AddExpenseDoc({ userId, setDocData }: Props) {
           type="text"
           value={formatWithCommas(singleDoc?.gross_price)}
           disabled
+          sx={{ width: 150 }}
         ></TextField>
         <Box>
           <Button

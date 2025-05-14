@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
   Box,
-  FormControl,
   InputLabel,
   MenuItem,
   Select,
@@ -50,18 +49,22 @@ export default function Home({ data }: { data: docInterface[] }) {
   };
 
   function sortingElements(data: docInterface[], sortBy: sortingTypes) {
-    if (sortBy == "ascending") {
-      data.sort((a, b) => a.price - b.price);
-    } else if (sortBy == "decending") {
-      data.sort((a, b) => b.price - a.price);
-    } else if (sortBy == "latest") {
-      data.sort((a, b) => b.created_at - a.created_at);
-    } else if (sortBy == "oldest") {
-      data.sort((a, b) => a.created_at - b.created_at);
-    } else if (sortBy == "by_name") {
-      data = _.sortBy(data, "name");
+    const copiedData = data.slice()
+
+    switch (sortBy) {
+      case "ascending":
+        return copiedData.sort((a, b) => a.gross_price - b.gross_price);
+      case "decending":
+        return copiedData.sort((a, b) => b.gross_price - a.gross_price);
+      case "latest":
+        return copiedData.sort((a, b) => b.invoice_time - a.invoice_time);
+      case "oldest":
+        return copiedData.sort((a, b) => a.invoice_time - b.invoice_time);
+      case "by_name":
+        return _.sortBy(copiedData, "name");
+      default:
+        return copiedData;
     }
-    return data;
   }
 
   const handleTotal = (docData: docInterface[]) => {
@@ -78,6 +81,7 @@ export default function Home({ data }: { data: docInterface[] }) {
           {userCred ? (
             <>
               <AddExpenseDoc userId={userCred?.uid} setDocData={setDocData} />
+
               <div className={styles.items_container}>
                 <div className={styles.items_searchbar}>
                   <TextField placeholder="search" onChange={handleInput} />

@@ -15,7 +15,7 @@ import {
 import EditSquareIcon from "@mui/icons-material/EditSquare";
 import CheckIcon from "@mui/icons-material/Check";
 import SendData from "../utils/sendData";
-import { formatWithCommas } from "./addExpenseDoc";
+import { formatDate, formatWithCommas } from "./addExpenseDoc";
 interface props {
   data: docInterface;
   changeDocData: React.Dispatch<React.SetStateAction<docInterface[]>>;
@@ -23,7 +23,7 @@ interface props {
 
 const handleDate = (date: number) => {
   return isThisYear(date)
-    ? format(date, "dd MMM") // e.g., "10 May"
+    ? format(date, "dd MMM hh:mm a") // e.g., "10 May"
     : format(date, "dd MMM yyyy");
 };
 
@@ -46,6 +46,10 @@ export default function SingleCard({ data, changeDocData }: props) {
 
       if (name === "quantity" || name === "price") {
         updatedDoc.gross_price = quantity * price;
+      }
+
+      if (name == "invoice_time") {
+        updatedDoc.invoice_time = new Date(value).getTime();
       }
 
       return updatedDoc;
@@ -111,12 +115,19 @@ export default function SingleCard({ data, changeDocData }: props) {
           <div className={styles.name_board}>
             <div className={styles.card_vertical}>
               <ListItemText className={styles.card_name} primary={data.name} />
-              <ListItemText primary={handleDate(docData.created_at)} />
+              <ListItemText primary={handleDate(docData.invoice_time)} />
             </div>
           </div>
         </div>
 
         <div className={styles.card_right}>
+          <div className={styles.card_vertical_price}>
+            <ListItemText>Description</ListItemText>
+
+            <ListItemText>
+              {data.description ? data.description : "empty"}
+            </ListItemText>
+          </div>
           <div className={styles.card_vertical_price}>
             <ListItemText>
               Costing ={formatWithCommas(docData.quantity)}x
@@ -154,6 +165,14 @@ export default function SingleCard({ data, changeDocData }: props) {
               ></TextField>
 
               <TextField
+                placeholder="description"
+                name="description"
+                value={docData?.description}
+                onChange={handleInput}
+                label="description"
+              ></TextField>
+
+              <TextField
                 required
                 label="quantity"
                 onChange={handleInput}
@@ -184,6 +203,18 @@ export default function SingleCard({ data, changeDocData }: props) {
                 sx={{ width: 150 }}
                 disabled
               ></TextField>
+              <TextField
+                required
+                label="Invoice Time"
+                type="datetime-local"
+                name="invoice_time"
+                value={formatDate(docData.invoice_time)}
+                onChange={handleInput}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                sx={{ width: 250 }}
+              />
               <Box>
                 <Button
                   type="submit"

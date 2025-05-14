@@ -12,3 +12,28 @@
 .navbar {
   position: absolute;
 }
+
+/* White background for grid container */
+.rdg {
+  background-color: white !important;
+  color: black;
+}
+
+/* White header cells */
+.rdg-header-row {
+  background-color: white !important;
+  color: black;
+  font-weight: bold;
+}
+
+/* White data rows */
+.rdg-row {
+  background-color: white !important;
+  color: black;
+}
+
+/* Optional: Add border or shadow */
+.rdg {
+  border: 1px solid #ccc;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
+}

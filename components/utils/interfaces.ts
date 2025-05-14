@@ -31,9 +31,10 @@ export interface docInterface {
   uid: string;
   doc_id: string;
   name: string;
-  //  type: string;
+  invoice_time:number;
   created_at: number;
   price: number;
   quantity: number;
   gross_price: number;
+  description:string
 }

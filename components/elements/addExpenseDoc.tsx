@@ -10,25 +10,39 @@ interface Props {
   setDocData: React.Dispatch<React.SetStateAction<docInterface[]>>;
 }
 
-
 export const formatWithCommas = (val: number) => {
   return val ? Number(val).toLocaleString("en-US") : val;
 };
 
+export const formatDate = (timestamp: number) => {
+  const date = new Date(timestamp);
+  const pad = (n: number) => n.toString().padStart(2, "0");
+
+  const year = date.getFullYear();
+  const month = pad(date.getMonth() + 1);
+  const day = pad(date.getDate());
+  const hours = pad(date.getHours());
+  const minutes = pad(date.getMinutes());
+
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+};
+
 export default function AddExpenseDoc({ userId, setDocData }: Props) {
+  const time = new Date().getTime();
+
   const initDoc: docInterface = {
     doc_id: uuid.rnd(),
     uid: userId,
-    created_at: new Date().getTime(),
+    created_at: time,
+    invoice_time: time,
     name: "",
     quantity: 1,
     price: 0,
     gross_price: 0,
+    description: "",
   };
 
   const [singleDoc, setSingleDoc] = useState<docInterface>(initDoc);
-
-
 
   const handleInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name } = event.target;
@@ -45,6 +59,9 @@ export default function AddExpenseDoc({ userId, setDocData }: Props) {
 
       if (name === "quantity" || name === "price") {
         updatedDoc.gross_price = quantity * price;
+      }
+      if (name == "invoice_time") {
+        updatedDoc.invoice_time = new Date(value).getTime();
       }
 
       return updatedDoc;
@@ -72,6 +89,8 @@ export default function AddExpenseDoc({ userId, setDocData }: Props) {
     }
   };
 
+ 
+
   return (
     <div className={styles.add_doc}>
       <form onSubmit={appendDoc}>
@@ -82,6 +101,14 @@ export default function AddExpenseDoc({ userId, setDocData }: Props) {
           value={singleDoc?.name}
           onChange={handleInput}
           label="name"
+        ></TextField>
+
+        <TextField
+          placeholder="description"
+          name="description"
+          value={singleDoc?.description}
+          onChange={handleInput}
+          label="description"
         ></TextField>
 
         <TextField
@@ -115,6 +142,18 @@ export default function AddExpenseDoc({ userId, setDocData }: Props) {
           disabled
           sx={{ width: 150 }}
         ></TextField>
+        <TextField
+          required
+          label="Invoice Time"
+          type="datetime-local"
+          name="invoice_time"
+          value={formatDate(singleDoc.invoice_time)}
+          onChange={handleInput}
+          InputLabelProps={{
+            shrink: true,
+          }}
+          sx={{ width: 250 }}
+        />
         <Box>
           <Button
             type="submit"

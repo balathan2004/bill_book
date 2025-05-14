@@ -2,7 +2,7 @@ import { RequestInit } from "next/dist/server/web/spec-extension/request";
 import { AuthResponseConfig, ResponseConfig } from "./interfaces";
 
 interface Props {
-  data: Object;
+  data: object;
   route: string;
   credentials?: boolean;
 }

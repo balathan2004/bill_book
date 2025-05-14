@@ -1,5 +1,5 @@
 import { Button } from "@mui/material";
-import React, { Component } from "react";
+import React from "react";
 import GoogleIcon from "@mui/icons-material/Google";
 import { useLoadingContext } from "@/components/context/loading_context";
 import { auth } from "@/config";

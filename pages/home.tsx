@@ -45,11 +45,14 @@ export default function Home({ data }: { data: docInterface[] }) {
   const handleSelect = (event: any) => {
     const value = event.target.value as sortingTypes;
     setSortBy(value);
-    setShowingDocs(sortingElements(showingDocs, value));
   };
 
+  useEffect(() => {
+    setShowingDocs(sortingElements(showingDocs, sortBy));
+  }, [sortBy]);
+
   function sortingElements(data: docInterface[], sortBy: sortingTypes) {
-    const copiedData = data.slice()
+    const copiedData = data.slice();
 
     switch (sortBy) {
       case "ascending":

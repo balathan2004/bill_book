@@ -4,9 +4,8 @@ import {
   dummyCred,
   UserDataInterface,
 } from "@/components/utils/interfaces";
-import { setCookie } from "cookies-next";
 import { firestore } from "@/config";
-import { getDoc, doc, setDoc } from "firebase/firestore";
+import { getDoc, doc } from "firebase/firestore";
 export default async function (
   req: NextApiRequest,
   res: NextApiResponse<AuthResponseConfig>

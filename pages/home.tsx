@@ -149,13 +149,16 @@ export async function getServerSideProps(
       };
     }
 
-    const response = await fetch("http://localhost:3000/api/docs/get_docs", {
-      body: JSON.stringify({ uid }),
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_DomainUrl}/api/docs/get_docs`,
+      {
+        body: JSON.stringify({ uid }),
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
     const res = (await response.json()) as docResponseConfig;
 

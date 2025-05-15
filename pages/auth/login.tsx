@@ -2,7 +2,7 @@ import { Button } from "@mui/material";
 import React from "react";
 import GoogleIcon from "@mui/icons-material/Google";
 import { useLoadingContext } from "@/components/context/loading_context";
-import { auth } from "@/clientConfig";
+import { auth } from "@/firebase.client";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import {
   AuthResponseConfig,

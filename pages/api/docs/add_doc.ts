@@ -1,4 +1,4 @@
-import { firestore } from "@/config";
+import { firestore } from "@/firebase.server";
 import { docInterface, ResponseConfig } from "@/components/utils/interfaces";
 import {  doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { NextApiRequest, NextApiResponse } from "next";

@@ -4,7 +4,7 @@ import {
   dummyCred,
   UserDataInterface,
 } from "@/components/utils/interfaces";
-import { firestore } from "@/config";
+import { firestore } from "@/firebase.server";
 import { getDoc, doc } from "firebase/firestore";
 export default async function (
   req: NextApiRequest,

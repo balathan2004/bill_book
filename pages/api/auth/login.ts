@@ -5,8 +5,6 @@ import {
 } from "@/components/utils/interfaces";
 import { setCookie } from "cookies-next";
 import { firestore } from "@/config";
-
-// added
 import { getDoc, doc, setDoc } from "firebase/firestore";
 
 export default async function (

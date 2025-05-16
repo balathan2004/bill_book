@@ -14,7 +14,6 @@ export const NavInit: NavItem[] = [
 export const NavUsers: NavItem[] = [
   { name: "home", path: "/home" },
   { name: "invoice", path: "/invoice" },
-  { name: "download", path: "/download" },
   { name: "account", path: "/account" },
 ];
 

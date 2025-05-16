@@ -70,7 +70,9 @@ function DrawerAppBar() {
             component="div"
             sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
           >
-            <Link href="/">BillBook</Link>
+            <Link href="/">
+              <Button sx={{ color: "#fff" }}>BillBook</Button>
+            </Link>
           </Typography>
           <Box sx={{ display: { xs: "none", sm: "block" } }}>
             {dirs.map((item) => (

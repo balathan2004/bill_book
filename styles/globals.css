@@ -12,6 +12,10 @@
   flex-direction: column;
 }
 
+.margin_container{
+  margin: 1rem;
+}
+
 .navbar {
   position: absolute;
 }

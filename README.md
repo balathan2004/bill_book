@@ -1,40 +1,43 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
 
-## Getting Started
+# BillBook - Expense Tracker App
 
-First, run the development server:
+**BillBook** is a minimal and efficient expense tracker to manage your incomes, expenses, and invoices with ease.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Tech Stack
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+* **TypeScript**
+* **React**
+* **Next.js**
+* **Firebase**
+* **Express**
+* **Vercel** (Hosting)
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+## Features
 
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+* **Add Entries** – Manually add income and expense records.
+* **CRUD Operations** – Edit or delete any entry easily.
+* **Responsive Data Grid** – Clean table view for all transactions.
+* **Mobile Friendly** – Optimized for all screen sizes.
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
+## How It Works
 
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. **Add Entries** by filling date, description, amount, and type (Income/Expense).
+3. **View & Manage Records** in a simple data grid.
+4. **Edit or Delete** entries as needed to keep your records updated.
 
-## Learn More
+## About
 
-To learn more about Next.js, take a look at the following resources:
+* **Dev:** Light
+* **LinkedIn:** [Link to LinkedIn](https://www.linkedin.com/in/balathan2004/)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn-pages-router) - an interactive Next.js tutorial.
+BillBook is built to simplify expense management, whether personal or business. Track, analyze, and stay organized.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## License
 
-## Deploy on Vercel
+This project is licensed under the **MIT License**.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+✅ **Simple. Clean. Matches your vibe.**
+
+Wanna add a **cool ASCII BillBook logo** at the top of README like a pro?
+Reply: `Yes bro, make it classy 🧾`.

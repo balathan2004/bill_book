@@ -83,9 +83,14 @@ export default function Home({ data }: { data: docInterface[] }) {
           <h1>Your Invoices</h1>
           {userCred ? (
             <>
-              <AddExpenseDoc userId={userCred?.uid} setDocData={setDocData} />
+              <nav>
+                <div>
+                  <AddExpenseDoc
+                    userId={userCred?.uid}
+                    setDocData={setDocData}
+                  />
+                </div>
 
-              <div className={styles.items_container}>
                 <div className={styles.items_searchbar}>
                   <TextField placeholder="search" onChange={handleInput} />
                   <InputLabel>Sort By</InputLabel>
@@ -93,6 +98,7 @@ export default function Home({ data }: { data: docInterface[] }) {
                     defaultValue="latest"
                     onChange={handleSelect}
                     label="Sort By"
+                    style={{ minWidth: "200px" }}
                   >
                     <MenuItem value="latest">Latest</MenuItem>
                     <MenuItem value="oldest">Oldest</MenuItem>
@@ -101,7 +107,9 @@ export default function Home({ data }: { data: docInterface[] }) {
                     <MenuItem value="by_name">By Name</MenuItem>
                   </Select>
                 </div>
+              </nav>
 
+              <div className={styles.items_container}>
                 {showingDocs.map((item) => (
                   <SingleCard
                     data={item}
@@ -109,24 +117,22 @@ export default function Home({ data }: { data: docInterface[] }) {
                     key={item.doc_id}
                   />
                 ))}
-                <div>
-                  <Box
-                    sx={{
-                      position: "sticky",
-                      bottom: 0,
-                      backgroundColor: "white",
-                      borderTop: "1px solid #ccc",
-                      padding: 2,
-                      textAlign: "right",
-                      boxShadow: 2,
-                    }}
-                  >
-                    <Typography variant="h6">
-                      Total: ₹{formatWithCommas(handleTotal(showingDocs))}
-                    </Typography>
-                  </Box>
-                </div>
               </div>
+              <footer className={styles.footer}>
+                <Box
+                  sx={{
+                    backgroundColor: "white",
+                    borderTop: "1px solid #ccc",
+                    padding: 2,
+                    textAlign: "right",
+                    boxShadow: 2,
+                  }}
+                >
+                  <Typography variant="h6">
+                    Total: ₹{formatWithCommas(handleTotal(showingDocs))}
+                  </Typography>
+                </Box>
+              </footer>
             </>
           ) : null}
         </div>

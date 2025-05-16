@@ -15,9 +15,11 @@ export default function ContextWrapper({ children }: { children: ReactNode }) {
 
     const res = (await response.json()) as AuthResponseConfig;
     if (res.status == 200) {
-      router.push("/home");
       setUserCred(res.credentials);
       setDirs(NavUsers);
+      if (router.pathname.includes("/auth")||router.pathname.endsWith('/')) {
+        router.push("/home");
+      }
     }
   };
 

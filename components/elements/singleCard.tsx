@@ -15,7 +15,9 @@ import {
 import EditSquareIcon from "@mui/icons-material/EditSquare";
 import CheckIcon from "@mui/icons-material/Check";
 import SendData from "../utils/sendData";
+import { useLoadingContext } from "../context/loading_context";
 import { formatDate, formatWithCommas } from "./addExpenseDoc";
+import { LoadingButton } from "@mui/lab";
 interface props {
   data: docInterface;
   changeDocData: React.Dispatch<React.SetStateAction<docInterface[]>>;
@@ -30,6 +32,7 @@ const handleDate = (date: number) => {
 export default function SingleCard({ data, changeDocData }: props) {
   const [docData, setDocData] = useState(data);
   const [isEditable, setIsEditable] = useState(false);
+  const { loading, setLoading } = useLoadingContext();
 
   const handleInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name } = event.target;
@@ -58,6 +61,7 @@ export default function SingleCard({ data, changeDocData }: props) {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setLoading(true);
 
     const response = await fetch("/api/docs/add_doc", {
       method: "POST",
@@ -68,7 +72,7 @@ export default function SingleCard({ data, changeDocData }: props) {
     });
 
     const res = (await response.json()) as ResponseConfig;
-
+    setLoading(false);
     if (res.status == 200) {
       changeDocData((prev) => {
         const filtered = prev.filter((item) => item.doc_id != data.doc_id);
@@ -109,19 +113,28 @@ export default function SingleCard({ data, changeDocData }: props) {
               src={`https://ui-avatars.com/api/?name=${data.name}`}
               sx={{ width: "100%", height: "100%" }}
               alt={data.name}
+              className={styles.avatar}
             ></Avatar>
           </ListItemAvatar>
 
           <div className={styles.name_board}>
             <div className={styles.card_vertical}>
               <ListItemText className={styles.card_name} primary={data.name} />
-              <ListItemText primary={handleDate(docData.invoice_time)} />
+              <ListItemText
+                primary={handleDate(docData.invoice_time)}
+                sx={{
+                  whiteSpace: "nowrap", // no wrapping
+                  overflow: "hidden", // hide extra text
+                  textOverflow: "ellipsis", // add ...
+                  maxWidth: "100%", // respect container width
+                }}
+              />
             </div>
           </div>
         </div>
 
         <div className={styles.card_right}>
-          <div className={styles.card_vertical_price}>
+          <div className={styles.card_description_price}>
             <ListItemText>Description</ListItemText>
 
             <ListItemText>
@@ -139,20 +152,60 @@ export default function SingleCard({ data, changeDocData }: props) {
             </ListItemText>
           </div>
           <div>
-            {!isEditable ? (
-              <EditSquareIcon onClick={() => setIsEditable((prev) => !prev)} />
-            ) : (
-              <CheckIcon onClick={() => setIsEditable((prev) => !prev)} />
-            )}
+            <div style={{ cursor: "pointer" }}>
+              {!isEditable ? (
+                <EditSquareIcon
+                  onClick={() => setIsEditable((prev) => !prev)}
+                  style={{
+                    fontSize: "2rem",
+                    color: "#1976d2", // blue color
+                    transition: "transform 0.2s ease",
+                  }}
+                  onMouseOver={(e) =>
+                    (e.currentTarget.style.transform = "scale(1.2)")
+                  }
+                  onMouseOut={(e) =>
+                    (e.currentTarget.style.transform = "scale(1)")
+                  }
+                />
+              ) : (
+                <CheckIcon
+                  onClick={() => setIsEditable((prev) => !prev)}
+                  style={{
+                    fontSize: "2rem",
+                    color: "#2e7d32", // green color
+                    transition: "transform 0.2s ease",
+                  }}
+                  onMouseOver={(e) =>
+                    (e.currentTarget.style.transform = "scale(1.2)")
+                  }
+                  onMouseOut={(e) =>
+                    (e.currentTarget.style.transform = "scale(1)")
+                  }
+                />
+              )}
+            </div>
           </div>
           <div>
-            <DeleteIcon onClick={handleDelete} />
+            <DeleteIcon
+              style={{
+                fontSize: "2rem",
+                color: "red", // green color
+                transition: "transform 0.2s ease",
+              }}
+              onMouseOver={(e) =>
+                (e.currentTarget.style.transform = "scale(1.2)")
+              }
+              onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
+              onClick={handleDelete}
+            />
           </div>
           <div></div>
         </div>
       </div>
-      <div className={styles.card_bottom}>
-        {isEditable ? (
+
+      {isEditable ? (
+        <div className={styles.card_bottom}>
           <div className={styles.add_doc}>
             <form onSubmit={handleSubmit}>
               <TextField
@@ -162,6 +215,7 @@ export default function SingleCard({ data, changeDocData }: props) {
                 value={docData?.name}
                 onChange={handleInput}
                 label="name"
+                className={styles.input}
               ></TextField>
 
               <TextField
@@ -170,6 +224,7 @@ export default function SingleCard({ data, changeDocData }: props) {
                 value={docData?.description}
                 onChange={handleInput}
                 label="description"
+                className={styles.input}
               ></TextField>
 
               <TextField
@@ -179,7 +234,7 @@ export default function SingleCard({ data, changeDocData }: props) {
                 name="quantity"
                 placeholder="quantity"
                 type="text"
-                sx={{ width: 150 }}
+                className={styles.input}
                 value={formatWithCommas(docData?.quantity)}
               ></TextField>
               <TextField
@@ -189,7 +244,7 @@ export default function SingleCard({ data, changeDocData }: props) {
                 name="price"
                 placeholder="price"
                 type="text"
-                sx={{ width: 150 }}
+                className={styles.input}
                 value={formatWithCommas(docData?.price)}
               ></TextField>
               <TextField
@@ -200,7 +255,7 @@ export default function SingleCard({ data, changeDocData }: props) {
                 label="gross price"
                 type="text"
                 value={formatWithCommas(docData?.gross_price)}
-                sx={{ width: 150 }}
+                className={styles.input}
                 disabled
               ></TextField>
               <TextField
@@ -210,26 +265,28 @@ export default function SingleCard({ data, changeDocData }: props) {
                 name="invoice_time"
                 value={formatDate(docData.invoice_time)}
                 onChange={handleInput}
+                className={styles.input_time}
                 InputLabelProps={{
                   shrink: true,
                 }}
-                sx={{ width: 250 }}
               />
               <Box>
-                <Button
-                  type="submit"
+                <LoadingButton
                   variant="contained"
                   sx={{ height: "56px", width: "100px" }}
                   fullWidth
+                  loading={loading} // your boolean state
+                  type="submit"
+                  loadingPosition="start"
                 >
                   Save
-                </Button>
+                </LoadingButton>
               </Box>
             </form>
             <div className="spacer"></div>
           </div>
-        ) : null}
-      </div>
+        </div>
+      ) : null}
     </ListItem>
   );
 }

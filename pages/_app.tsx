@@ -8,17 +8,20 @@ import ContextWrapper from "@/components/context/context.wrapper";
 import { UserHolder } from "@/components/context/user_context";
 export default function App({ Component, pageProps }: AppProps) {
   return (
+    <div className="container">
     <NavbarHolder>
       <LoaderHolder>
         <ReplyHolder>
           <UserHolder>
             <DrawerAppBar />
             <ContextWrapper>
+
               <Component {...pageProps} />
             </ContextWrapper>
           </UserHolder>
         </ReplyHolder>
       </LoaderHolder>
     </NavbarHolder>
+    </div>
   );
 }

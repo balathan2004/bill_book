@@ -1,12 +1,15 @@
 .container {
   min-height: 100vh;
-  overflow: hidden;
+  width: 100vw;
   position: relative;
 }
 
 .home_container {
   position: relative;
   top: 80px;
+  min-height: calc(100vh - 80px);
+  display: flex;
+  flex-direction: column;
 }
 
 .navbar {
@@ -17,6 +20,7 @@
 .rdg {
   background-color: white !important;
   color: black;
+  margin: 1rem;
 }
 
 /* White header cells */
@@ -36,4 +40,11 @@
 .rdg {
   border: 1px solid #ccc;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
+}
+
+@media (max-width: 800px) {
+  .home_container {
+    width: 90%;
+    margin: auto;
+  }
 }

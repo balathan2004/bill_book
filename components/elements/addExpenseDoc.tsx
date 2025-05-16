@@ -3,6 +3,8 @@ import { docInterface, ResponseConfig } from "../utils/interfaces";
 import { TextField, Button, Box } from "@mui/material";
 import ShortUniqueId from "short-unique-id";
 import styles from "@/styles/home.module.css";
+import { LoadingButton } from "@mui/lab";
+import { useLoadingContext } from "../context/loading_context";
 const uuid = new ShortUniqueId({ length: 20 });
 
 interface Props {
@@ -28,21 +30,24 @@ export const formatDate = (timestamp: number) => {
 };
 
 export default function AddExpenseDoc({ userId, setDocData }: Props) {
-  const time = new Date().getTime();
-
-  const initDoc: docInterface = {
-    doc_id: uuid.rnd(),
-    uid: userId,
-    created_at: time,
-    invoice_time: time,
-    name: "",
-    quantity: 1,
-    price: 0,
-    gross_price: 0,
-    description: "",
-  };
+  const initDoc: docInterface = (() => {
+    const now = Date.now();
+    return {
+      doc_id: uuid.rnd(),
+      uid: userId,
+      created_at: now,
+      invoice_time: now,
+      name: "",
+      quantity: 1,
+      price: 0,
+      gross_price: 0,
+      description: "",
+    };
+  })();
 
   const [singleDoc, setSingleDoc] = useState<docInterface>(initDoc);
+
+  const { loading, setLoading } = useLoadingContext();
 
   const handleInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name } = event.target;
@@ -70,6 +75,7 @@ export default function AddExpenseDoc({ userId, setDocData }: Props) {
 
   const appendDoc = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setLoading(true);
     if (!userId) {
       return;
     }
@@ -82,14 +88,12 @@ export default function AddExpenseDoc({ userId, setDocData }: Props) {
     });
 
     const res = (await response.json()) as ResponseConfig;
-
+    setLoading(false);
     if (res.status == 200) {
       setDocData((prev) => [{ ...singleDoc }, ...prev]);
       setSingleDoc(initDoc);
     }
   };
-
- 
 
   return (
     <div className={styles.add_doc}>
@@ -101,6 +105,7 @@ export default function AddExpenseDoc({ userId, setDocData }: Props) {
           value={singleDoc?.name}
           onChange={handleInput}
           label="name"
+          className={styles.input}
         ></TextField>
 
         <TextField
@@ -109,6 +114,7 @@ export default function AddExpenseDoc({ userId, setDocData }: Props) {
           value={singleDoc?.description}
           onChange={handleInput}
           label="description"
+          className={styles.input}
         ></TextField>
 
         <TextField
@@ -118,7 +124,7 @@ export default function AddExpenseDoc({ userId, setDocData }: Props) {
           name="quantity"
           placeholder="quantity"
           type="text"
-          sx={{ width: 150 }}
+          className={styles.input}
           value={formatWithCommas(singleDoc?.quantity)}
         ></TextField>
         <TextField
@@ -128,7 +134,7 @@ export default function AddExpenseDoc({ userId, setDocData }: Props) {
           name="price"
           placeholder="price"
           type="text"
-          sx={{ width: 150 }}
+          className={styles.input}
           value={formatWithCommas(singleDoc?.price)}
         ></TextField>
         <TextField
@@ -138,31 +144,33 @@ export default function AddExpenseDoc({ userId, setDocData }: Props) {
           placeholder="gross price"
           label="gross price"
           type="text"
+          className={styles.input}
           value={formatWithCommas(singleDoc?.gross_price)}
           disabled
-          sx={{ width: 150 }}
         ></TextField>
         <TextField
           required
           label="Invoice Time"
           type="datetime-local"
           name="invoice_time"
+          className={styles.input_time}
           value={formatDate(singleDoc.invoice_time)}
           onChange={handleInput}
           InputLabelProps={{
             shrink: true,
           }}
-          sx={{ width: 250 }}
         />
         <Box>
-          <Button
-            type="submit"
+          <LoadingButton
             variant="contained"
             sx={{ height: "56px", width: "100px" }}
             fullWidth
+            loading={loading} // your boolean state
+            type="submit"
+            loadingPosition="start"
           >
             Save
-          </Button>
+          </LoadingButton>
         </Box>
       </form>
     </div>

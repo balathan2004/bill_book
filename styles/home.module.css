@@ -2,39 +2,54 @@
   display: flex;
   justify-content: center;
   width: 100%;
+  height: 100%;
+  min-height: 100%;
+  padding-bottom: 2rem;
+  overflow-y: hidden;
 }
 
 .center_container {
   width: auto;
+  
+}
+
+.center_container h1 {
+  text-align: center;
 }
 
 .items_container {
-margin: 1rem 0;
-}
+  margin: 1rem 0;
+  display: flex;
+  flex: 1;
+  overflow-y: auto;
+  width: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  position: relative;
 
+}
 
 .add_doc form {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.items_searchbar{
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.items_searchbar select{
-  height: 100%;
+.items_searchbar {
+  display: flex;
+  align-items: center;
+  margin: 1rem 0;
+  gap: 10px;
 }
 
+.items_searchbar select {
+  height: 100%;
+}
 
 .income_card {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
   width: 100%;
   margin: 1rem 0;
   padding: 0;
@@ -44,47 +59,118 @@ margin: 1rem 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
-}
-
-.income_card img {
-
+  gap: 1rem;
+  width: 100%;
 }
 
 .card_left {
   display: flex;
   align-items: center;
   gap: 10px;
-  min-width: 300px;
+  flex: 1;
 }
 
-.card_name{
+.editor_singlecard {
+  margin-top: 1rem;
+}
+
+.card_left .avatar {
+}
+
+.card_name {
   font-weight: 700;
   text-transform: capitalize;
 }
 
 .card_right {
   display: flex;
-  flex: 1;
+  flex: 2;
   align-items: center;
   justify-content: space-between;
 }
 
 .card_vertical,
-.card_vertical_price {
+.card_vertical_price,
+.card_description_price {
   display: flex;
   flex-direction: column;
 }
 
-.card_vertical_price {
-  min-width: 200px;
+.card_vertical_price,
+.card_description_price {
+  width: 200px;
 }
 
-
 .card_bottom {
+  margin: 2rem 0 1rem 0;
   width: 100%;
+}
+
+.input {
+  width: 150px;
+}
+
+.input_time{
+  width: 250px;
 }
 
 .card_bottom form {
   display: flex;
 }
+.footer {
+  width: 100%;
+}
 
+@media (max-width: 800px) {
+  .center_container {
+    width: 100%;
+  }
+
+  .add_doc {
+    height: auto;
+  }
+
+  .add_doc form {
+    flex-wrap: wrap;
+  }
+
+  .add_doc form > * {
+    margin: 1rem 0;
+  }
+
+  .income_card {
+    width: auto;
+    font-size: 14px;
+    text-transform: lowercase;
+  }
+
+  .card_name {
+    font-size: 14px;
+  }
+
+  .card_left {
+    flex: 1;
+  }
+
+  .card_right {
+  }
+
+  .card_vertical_price,
+  .card_description_price {
+    min-width: none;
+    width: fit-content;
+  }
+
+  .card_top {
+    align-items: center;
+    gap: 10px;
+  }
+  .card_left .avatar {
+    height: 45px;
+    width: 45px;
+  }
+
+  .card_description_price {
+    display: none;
+  }
+}

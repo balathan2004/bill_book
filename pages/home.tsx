@@ -17,13 +17,33 @@ import AddExpenseDoc, {
 } from "@/components/elements/addExpenseDoc";
 import SingleCard from "@/components/elements/singleCard";
 import styles from "@/styles/home.module.css";
-
+import ShortUniqueId from "short-unique-id";
+const uuid = new ShortUniqueId({ length: 20 });
 type sortingTypes = "ascending" | "decending" | "latest" | "oldest" | "by_name";
+
+export const newDoc = (uid: string) => {
+  const now = Date.now();
+  return {
+    doc_id: uuid.rnd(),
+    uid: uid,
+    created_at: now,
+    invoice_time: now,
+    name: "",
+    quantity: 1,
+    price: 0,
+    gross_price: 0,
+    description: "",
+  };
+};
 
 export default function Home({ data }: { data: docInterface[] }) {
   const { userCred } = useUserContext();
   const [docData, setDocData] = useState<docInterface[]>(data);
-  const [showingDocs, setShowingDocs] = useState<docInterface[]>(data);
+  const [showingDocs, setShowingDocs] = useState<docInterface[]>(docData);
+
+  const [editableDoc, setEditableDoc] = useState<null | docInterface>(null);
+
+  const [selectedDoc, setSelectedDoc] = useState<string | null>(null);
 
   const [sortBy, setSortBy] = useState<sortingTypes>("latest");
 
@@ -37,19 +57,6 @@ export default function Home({ data }: { data: docInterface[] }) {
     const filtered = docData.filter((doc) => doc.name.includes(value));
     setShowingDocs(filtered);
   };
-
-  useEffect(() => {
-    if (docData.length > 0) setShowingDocs(docData);
-  }, [docData]);
-
-  const handleSelect = (event: any) => {
-    const value = event.target.value as sortingTypes;
-    setSortBy(value);
-  };
-
-  useEffect(() => {
-    setShowingDocs(sortingElements(showingDocs, sortBy));
-  }, [sortBy]);
 
   function sortingElements(data: docInterface[], sortBy: sortingTypes) {
     const copiedData = data.slice();
@@ -76,18 +83,56 @@ export default function Home({ data }: { data: docInterface[] }) {
     return total;
   };
 
+  const resetAddDoc = () => {
+    if (userCred && userCred.uid) {
+      setSelectedDoc(null);
+    }
+  };
+
+  useEffect(() => {
+    if (userCred && userCred.uid) {
+      setEditableDoc(newDoc(userCred.uid));
+    }
+  }, [userCred]);
+
+  useEffect(() => {
+    if (userCred) {
+      if (selectedDoc) {
+        const doc = docData.find((doc) => doc.doc_id == selectedDoc);
+        setEditableDoc(doc || null);
+      } else {
+        setEditableDoc(newDoc(userCred?.uid));
+      }
+    }
+  }, [selectedDoc]);
+
+  useEffect(() => {
+    if (docData.length > 0) setShowingDocs(docData);
+  }, [docData]);
+
+  useEffect(() => {
+    setShowingDocs(sortingElements(showingDocs, sortBy));
+  }, [sortBy]);
+
+  const handleSelect = (event: any) => {
+    const value = event.target.value as sortingTypes;
+    setSortBy(value);
+  };
+
   return (
     <div className="home_container">
       <div className={styles.home}>
         <div className={styles.center_container}>
           <h1>Your Invoices</h1>
-          {userCred ? (
+          {userCred && editableDoc ? (
             <>
               <nav>
                 <div>
                   <AddExpenseDoc
-                    userId={userCred?.uid}
                     setDocData={setDocData}
+                    data={editableDoc}
+                    
+                    resetAddDoc={resetAddDoc}
                   />
                 </div>
 
@@ -115,6 +160,8 @@ export default function Home({ data }: { data: docInterface[] }) {
                     data={item}
                     changeDocData={setDocData}
                     key={item.doc_id}
+                    isActiveEdit={selectedDoc}
+                    setEditableDoc={setSelectedDoc}
                   />
                 ))}
               </div>

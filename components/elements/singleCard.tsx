@@ -1,26 +1,21 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { docInterface, ResponseConfig } from "../utils/interfaces";
 import { format, isThisYear } from "date-fns";
 import styles from "@/styles/home.module.css";
 import DeleteIcon from "@mui/icons-material/Delete";
-import {
-  Avatar,
-  Box,
-  Button,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-  TextField,
-} from "@mui/material";
+import { Avatar, ListItem, ListItemAvatar, ListItemText } from "@mui/material";
 import EditSquareIcon from "@mui/icons-material/EditSquare";
 import CheckIcon from "@mui/icons-material/Check";
 import SendData from "../utils/sendData";
 import { useLoadingContext } from "../context/loading_context";
 import { formatDate, formatWithCommas } from "./addExpenseDoc";
 import { LoadingButton } from "@mui/lab";
+import { newDoc } from "@/pages/home";
 interface props {
   data: docInterface;
   changeDocData: React.Dispatch<React.SetStateAction<docInterface[]>>;
+  setEditableDoc: React.Dispatch<React.SetStateAction<string | null>>;
+  isActiveEdit: string | null;
 }
 
 const handleDate = (date: number) => {
@@ -29,57 +24,13 @@ const handleDate = (date: number) => {
     : format(date, "dd MMM yyyy");
 };
 
-export default function SingleCard({ data, changeDocData }: props) {
-  const [docData, setDocData] = useState(data);
+export default function SingleCard({
+  data,
+  setEditableDoc,
+  changeDocData,
+  isActiveEdit,
+}: props) {
   const [isEditable, setIsEditable] = useState(false);
-  const { loading, setLoading } = useLoadingContext();
-
-  const handleInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name } = event.target;
-    const value = event.target.value.replace(/,/g, "");
-
-    setDocData((prev) => {
-      const updatedDoc = {
-        ...prev,
-        [name]: value,
-      };
-
-      const quantity = updatedDoc.quantity || 0;
-      const price = updatedDoc.price || 0;
-
-      if (name === "quantity" || name === "price") {
-        updatedDoc.gross_price = quantity * price;
-      }
-
-      if (name == "invoice_time") {
-        updatedDoc.invoice_time = new Date(value).getTime();
-      }
-
-      return updatedDoc;
-    });
-  };
-
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setLoading(true);
-
-    const response = await fetch("/api/docs/add_doc", {
-      method: "POST",
-      body: JSON.stringify(docData),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    const res = (await response.json()) as ResponseConfig;
-    setLoading(false);
-    if (res.status == 200) {
-      changeDocData((prev) => {
-        const filtered = prev.filter((item) => item.doc_id != data.doc_id);
-        return [...filtered, docData];
-      });
-    }
-  };
 
   const handleDelete = async () => {
     const confimation = confirm("do you want to delete this transaction");
@@ -97,12 +48,26 @@ export default function SingleCard({ data, changeDocData }: props) {
       route: "/api/docs/delete_doc",
     });
 
+    console.log(response,"doc deletion")
+
     if (response.status == 200) {
       changeDocData((prev) => {
         return prev.filter((ele) => ele.doc_id != data.doc_id);
       });
     }
   };
+
+  useEffect(() => {
+    if (isEditable) {
+      setEditableDoc(data.doc_id);
+    }
+  }, [isEditable]);
+
+  useEffect(() => {
+    if (isActiveEdit === null) {
+      setIsEditable(false);
+    }
+  }, [isActiveEdit]);
 
   return (
     <ListItem disablePadding className={styles.income_card}>
@@ -121,7 +86,7 @@ export default function SingleCard({ data, changeDocData }: props) {
             <div className={styles.card_vertical}>
               <ListItemText className={styles.card_name} primary={data.name} />
               <ListItemText
-                primary={handleDate(docData.invoice_time)}
+                primary={handleDate(data.invoice_time)}
                 sx={{
                   whiteSpace: "nowrap", // no wrapping
                   overflow: "hidden", // hide extra text
@@ -143,12 +108,12 @@ export default function SingleCard({ data, changeDocData }: props) {
           </div>
           <div className={styles.card_vertical_price}>
             <ListItemText>
-              Costing ={formatWithCommas(docData.quantity)}x
-              {formatWithCommas(docData.price)}
+              Costing ={formatWithCommas(data.quantity)}x
+              {formatWithCommas(data.price)}
             </ListItemText>
 
             <ListItemText>
-              Gross={formatWithCommas(docData.gross_price)}
+              Gross={formatWithCommas(data.gross_price)}
             </ListItemText>
           </div>
           <div>
@@ -170,7 +135,10 @@ export default function SingleCard({ data, changeDocData }: props) {
                 />
               ) : (
                 <CheckIcon
-                  onClick={() => setIsEditable((prev) => !prev)}
+                  onClick={() => {
+                    setEditableDoc(null);
+                    setIsEditable((prev) => !prev);
+                  }}
                   style={{
                     fontSize: "2rem",
                     color: "#2e7d32", // green color
@@ -203,90 +171,6 @@ export default function SingleCard({ data, changeDocData }: props) {
           <div></div>
         </div>
       </div>
-
-      {isEditable ? (
-        <div className={styles.card_bottom}>
-          <div className={styles.add_doc}>
-            <form onSubmit={handleSubmit}>
-              <TextField
-                required
-                placeholder="name"
-                name="name"
-                value={docData?.name}
-                onChange={handleInput}
-                label="name"
-                className={styles.input}
-              ></TextField>
-
-              <TextField
-                placeholder="description"
-                name="description"
-                value={docData?.description}
-                onChange={handleInput}
-                label="description"
-                className={styles.input}
-              ></TextField>
-
-              <TextField
-                required
-                label="quantity"
-                onChange={handleInput}
-                name="quantity"
-                placeholder="quantity"
-                type="text"
-                className={styles.input}
-                value={formatWithCommas(docData?.quantity)}
-              ></TextField>
-              <TextField
-                required
-                label="price"
-                onChange={handleInput}
-                name="price"
-                placeholder="price"
-                type="text"
-                className={styles.input}
-                value={formatWithCommas(docData?.price)}
-              ></TextField>
-              <TextField
-                required
-                onChange={handleInput}
-                name="gross_price"
-                placeholder="gross price"
-                label="gross price"
-                type="text"
-                value={formatWithCommas(docData?.gross_price)}
-                className={styles.input}
-                disabled
-              ></TextField>
-              <TextField
-                required
-                label="Invoice Time"
-                type="datetime-local"
-                name="invoice_time"
-                value={formatDate(docData.invoice_time)}
-                onChange={handleInput}
-                className={styles.input_time}
-                InputLabelProps={{
-                  shrink: true,
-                }}
-              />
-              <Box>
-                <LoadingButton
-                  variant="contained"
-                  sx={{ height: "56px", width: "100px" }}
-                  fullWidth
-                  loading={loading} // your boolean state
-                  type="submit"
-                  loadingPosition="start"
-                >
-                  Save
-                </LoadingButton>
-              </Box>
-            </form>
-            <div className="spacer"></div>
-          </div>
-        </div>
-      ) : null}
     </ListItem>
   );
 }

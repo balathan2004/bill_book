@@ -1,15 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { docInterface, ResponseConfig } from "../utils/interfaces";
 import { TextField, Button, Box } from "@mui/material";
-import ShortUniqueId from "short-unique-id";
 import styles from "@/styles/home.module.css";
 import { LoadingButton } from "@mui/lab";
 import { useLoadingContext } from "../context/loading_context";
-const uuid = new ShortUniqueId({ length: 20 });
 
 interface Props {
-  userId: string;
+  data: docInterface;
   setDocData: React.Dispatch<React.SetStateAction<docInterface[]>>;
+  resetAddDoc:()=>void
+ 
 }
 
 export const formatWithCommas = (val: number) => {
@@ -29,23 +29,8 @@ export const formatDate = (timestamp: number) => {
   return `${year}-${month}-${day}T${hours}:${minutes}`;
 };
 
-export default function AddExpenseDoc({ userId, setDocData }: Props) {
-  const initDoc: docInterface = (() => {
-    const now = Date.now();
-    return {
-      doc_id: uuid.rnd(),
-      uid: userId,
-      created_at: now,
-      invoice_time: now,
-      name: "",
-      quantity: 1,
-      price: 0,
-      gross_price: 0,
-      description: "",
-    };
-  })();
-
-  const [singleDoc, setSingleDoc] = useState<docInterface>(initDoc);
+export default function AddExpenseDoc({ data, resetAddDoc,setDocData }: Props) {
+  const [singleDoc, setSingleDoc] = useState<docInterface>(data);
 
   const { loading, setLoading } = useLoadingContext();
 
@@ -76,9 +61,7 @@ export default function AddExpenseDoc({ userId, setDocData }: Props) {
   const appendDoc = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setLoading(true);
-    if (!userId) {
-      return;
-    }
+
     const response = await fetch("/api/docs/add_doc", {
       method: "POST",
       body: JSON.stringify(singleDoc),
@@ -90,10 +73,17 @@ export default function AddExpenseDoc({ userId, setDocData }: Props) {
     const res = (await response.json()) as ResponseConfig;
     setLoading(false);
     if (res.status == 200) {
-      setDocData((prev) => [{ ...singleDoc }, ...prev]);
-      setSingleDoc(initDoc);
+      setDocData((prev) => {
+        const filtered = prev.filter((doc) => doc.doc_id != singleDoc.doc_id);
+        return [singleDoc, ...filtered];
+      });
+      resetAddDoc()
     }
   };
+
+  useEffect(() => {
+    setSingleDoc(data);
+  }, [data]);
 
   return (
     <div className={styles.add_doc}>

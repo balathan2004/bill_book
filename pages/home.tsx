@@ -86,6 +86,7 @@ export default function Home({ data }: { data: docInterface[] }) {
   const resetAddDoc = () => {
     if (userCred && userCred.uid) {
       setSelectedDoc(null);
+      setEditableDoc(newDoc(userCred.uid));
     }
   };
 
@@ -131,7 +132,6 @@ export default function Home({ data }: { data: docInterface[] }) {
                   <AddExpenseDoc
                     setDocData={setDocData}
                     data={editableDoc}
-                    
                     resetAddDoc={resetAddDoc}
                   />
                 </div>

@@ -79,6 +79,7 @@ export default function SingleCard({
               sx={{ width: "100%", height: "100%" }}
               alt={data.name}
               className={styles.avatar}
+              
             ></Avatar>
           </ListItemAvatar>
 

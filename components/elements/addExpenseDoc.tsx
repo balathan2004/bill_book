@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { docInterface, ResponseConfig } from "../utils/interfaces";
 import { TextField, Box } from "@mui/material";
-import styles from "@/styles/home.module.css";
+import styles from "@/styles/addDoc.module.css";
 import { LoadingButton } from "@mui/lab";
 import { useLoadingContext } from "../context/loading_context";
+import Paper from "@mui/material/Paper";
+import Grid from "@mui/material/Grid";
 
 interface Props {
   data: docInterface;
   setDocData: React.Dispatch<React.SetStateAction<docInterface[]>>;
-  resetAddDoc:()=>void
- 
+  resetAddDoc: () => void;
 }
 
 export const formatWithCommas = (val: number) => {
@@ -29,7 +30,11 @@ export const formatDate = (timestamp: number) => {
   return `${year}-${month}-${day}T${hours}:${minutes}`;
 };
 
-export default function AddExpenseDoc({ data, resetAddDoc,setDocData }: Props) {
+export default function AddExpenseDoc({
+  data,
+  resetAddDoc,
+  setDocData,
+}: Props) {
   const [singleDoc, setSingleDoc] = useState<docInterface>(data);
 
   const { loading, setLoading } = useLoadingContext();
@@ -77,7 +82,7 @@ export default function AddExpenseDoc({ data, resetAddDoc,setDocData }: Props) {
         const filtered = prev.filter((doc) => doc.doc_id != singleDoc.doc_id);
         return [singleDoc, ...filtered];
       });
-      resetAddDoc()
+      resetAddDoc();
     }
   };
 
@@ -117,6 +122,7 @@ export default function AddExpenseDoc({ data, resetAddDoc,setDocData }: Props) {
           className={styles.input}
           value={formatWithCommas(singleDoc?.quantity)}
         ></TextField>
+
         <TextField
           required
           label="price"
@@ -127,6 +133,7 @@ export default function AddExpenseDoc({ data, resetAddDoc,setDocData }: Props) {
           className={styles.input}
           value={formatWithCommas(singleDoc?.price)}
         ></TextField>
+
         <TextField
           required
           onChange={handleInput}
@@ -138,6 +145,7 @@ export default function AddExpenseDoc({ data, resetAddDoc,setDocData }: Props) {
           value={formatWithCommas(singleDoc?.gross_price)}
           disabled
         ></TextField>
+
         <TextField
           required
           label="Invoice Time"
@@ -150,6 +158,7 @@ export default function AddExpenseDoc({ data, resetAddDoc,setDocData }: Props) {
             shrink: true,
           }}
         />
+
         <Box>
           <LoadingButton
             variant="contained"

@@ -46,17 +46,20 @@ export default function Login() {
 
   return (
     <div className="home_container">
-      <Button
-        component="label"
-        variant="contained"
-        loading={loading}
-        loadingPosition="start"
-        tabIndex={-1}
-        startIcon={<GoogleIcon />}
-        onClick={handlePopUp}
-      >
-        Continue With Google
-      </Button>
+      <div>
+        <h1>Sign in to BillBook</h1>
+        <Button
+          component="label"
+          variant="contained"
+          loading={loading}
+          loadingPosition="start"
+          tabIndex={-1}
+          startIcon={<GoogleIcon />}
+          onClick={handlePopUp}
+        >
+          Continue With Google
+        </Button>
+      </div>
     </div>
   );
 }

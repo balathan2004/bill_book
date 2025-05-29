@@ -32,15 +32,37 @@ function DrawerAppBar() {
       sx={{ textAlign: "center" }}
       className="navbar"
     >
-      <Typography variant="h6" sx={{ my: 2 }}>
-        <Link href="/">BillBook</Link>
+      <Typography
+        variant="h6"
+        sx={{
+          my: 2,
+        }}
+      >
+        <Link
+          style={{
+            textTransform: "capitalize",
+            textDecoration: "none",
+            color: "inherit",
+          }}
+          href="/"
+        >
+          BillBook
+        </Link>
       </Typography>
       <Divider />
       <List>
         {dirs.map((item) => (
-          <Link href={item.path} key={item.name}>
+          <Link
+            style={{
+              textTransform: "capitalize",
+              textDecoration: "none",
+              color: "inherit",
+            }}
+            href={item.path}
+            key={item.name}
+          >
             <ListItem disablePadding>
-              <ListItemButton sx={{ textAlign: "center" }}>
+              <ListItemButton>
                 <ListItemText primary={item.name} />
               </ListItemButton>
             </ListItem>
@@ -70,8 +92,23 @@ function DrawerAppBar() {
             component="div"
             sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
           >
-            <Link href="/">
-              <Button sx={{ color: "#fff" }}>BillBook</Button>
+            <Link
+              style={{
+                textTransform: "capitalize",
+                textDecoration: "none",
+                color: "inherit",
+              }}
+              href="/"
+            >
+              <Button
+                sx={{
+                  textTransform: "capitalize",
+                  textDecoration: "none",
+                  color: "inherit",
+                }}
+              >
+                BillBook
+              </Button>
             </Link>
           </Typography>
           <Box sx={{ display: { xs: "none", sm: "block" } }}>

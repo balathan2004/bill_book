@@ -1,33 +1,33 @@
 .add_doc form {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  justify-content: flex-start;
-}
-
-.add_doc form > * {
-  flex: 1 1 12%; /* Default: allow shrinking and grow, take ~12% */
-  min-width: 180px; /* Prevent collapsing too much */
-}
-
-
-@media (max-width: 1200px) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  
+  /* Default (desktop): 7 per row */
+  .add_doc form > * {
+    flex: 1 1 13%; /* 7 * 13% + gaps = ~100% */
+    min-width: 150px; /* Prevent too small items */
+  }
+  
+  /* Tablet: 3 per row */
+  @media (max-width: 1200px) {
     .add_doc form > * {
-      flex: 1 1 18%;
+      flex: 1 1 30%;
     }
   }
   
-  /* 2 per row (phones) */
+  /* Mobile: 2 per row */
   @media (max-width: 800px) {
     .add_doc form > * {
-      flex: 1 1 48%;
+      flex: 1 1 47%; /* 2 * 47% + gap = ~100% */
     }
   }
   
-  /* Optional: override for tiny screens */
-  @media (max-width: 300px) {
+  /* Small mobile: STILL 2 per row */
+  @media (max-width: 500px) {
     .add_doc form > * {
-      flex: 1 1 100%; /* keep 2 per row */
+      flex: 1 1 40%;
     }
   }
   

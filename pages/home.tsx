@@ -133,6 +133,7 @@ export default function Home({ data }: { data: docInterface[] }) {
                     setDocData={setDocData}
                     data={editableDoc}
                     resetAddDoc={resetAddDoc}
+                    docData={docData}
                   />
                 </div>
 

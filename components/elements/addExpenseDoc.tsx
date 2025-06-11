@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { docInterface, ResponseConfig } from "../utils/interfaces";
 import { TextField, Box } from "@mui/material";
 import styles from "@/styles/addDoc.module.css";
@@ -11,6 +11,7 @@ interface Props {
   data: docInterface;
   setDocData: React.Dispatch<React.SetStateAction<docInterface[]>>;
   resetAddDoc: () => void;
+  docData: docInterface[];
 }
 
 export const formatWithCommas = (val: number) => {
@@ -34,10 +35,19 @@ export default function AddExpenseDoc({
   data,
   resetAddDoc,
   setDocData,
+  docData,
 }: Props) {
   const [singleDoc, setSingleDoc] = useState<docInterface>(data);
 
   const { loading, setLoading } = useLoadingContext();
+
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.setAttribute("list", "expenses");
+    }
+  }, []);
 
   const handleInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name } = event.target;
@@ -100,8 +110,17 @@ export default function AddExpenseDoc({
           value={singleDoc?.name}
           onChange={handleInput}
           label="name"
+          inputRef={inputRef}
           className={styles.input}
         ></TextField>
+
+        <datalist id="expenses">
+          {[...new Set(docData.map((ele) => ele.name))].map((name) => (
+            <option value={name} key={name}>
+              {name}
+            </option>
+          ))}
+        </datalist>
 
         <TextField
           placeholder="description"

@@ -30,9 +30,9 @@ export const dummyCred = {
 export interface docInterface {
   uid: string;
   doc_id: string;
+  created_at: number;
   name: string;
   invoice_time:number;
-  created_at: number;
   price: number;
   quantity: number;
   gross_price: number;

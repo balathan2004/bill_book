@@ -4,8 +4,6 @@ import { TextField, Box } from "@mui/material";
 import styles from "@/styles/addDoc.module.css";
 import { LoadingButton } from "@mui/lab";
 import { useLoadingContext } from "../context/loading_context";
-import Paper from "@mui/material/Paper";
-import Grid from "@mui/material/Grid";
 
 interface Props {
   data: docInterface;
@@ -51,7 +49,10 @@ export default function AddExpenseDoc({
 
   const handleInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name } = event.target;
-    const value = event.target.value.replace(/,/g, "");
+    const value =
+      name == "description"
+        ? event.target.value
+        : event.target.value.replace(/,/g, "");
 
     setSingleDoc((prev) => {
       const updatedDoc = {

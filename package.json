@@ -36,5 +36,10 @@
     "eslint-config-next": "15.3.1",
     "tsx": "^4.19.4",
     "typescript": "^5"
-  }
+  },
+  "overrides": {
+  "react-server-dom-webpack": ">=0.0.0-canary.20240405",
+  "react-server-dom-turbopack": ">=0.0.0-canary.20240405"
+}
+
 }

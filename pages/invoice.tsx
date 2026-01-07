@@ -6,7 +6,7 @@ import { DataGrid } from "react-data-grid";
 import "react-data-grid/lib/styles.css";
 import * as XLSX from "xlsx";
 
-const columns = [
+export const columns = [
   { key: "name", name: "Name" },
   { key: "quantity", name: "quantity" },
   { key: "price", name: "Price" },

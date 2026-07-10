@@ -1,52 +1,39 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import {
   AuthResponseConfig,
-  UserDataInterface,
 } from "@/components/utils/interfaces";
-import { setCookie } from "cookies-next";
-import { firestore } from "@/firebase.server";
-import { getDoc, doc, setDoc } from "firebase/firestore";
+import { bodyValidator } from "@/src/server/middlewares/bodyValidator";
+import { loginSchema } from "@/src/server/schemas/auth.schema";
+import { AppError } from "@/src/server/utils/appError";
+import { AuthService } from "@/src/server/services/auth.services";
+import { generateAccessToken, generateRefreshToken } from "@/src/server/middlewares/jwt";
+import reponseWithCookie from "@/src/server/utils/responseWithCookie";
+import withCors from "@/src/server/middlewares/cors";
+import { withErrorHandler } from "@/src/server/middlewares/withErrorHandler";
 
-export default async function (
+export async function handler(
   req: NextApiRequest,
   res: NextApiResponse<AuthResponseConfig>
 ) {
-  const data = req.body as UserDataInterface;
-  const isSecure = process.env.NODE_ENV === "production";
 
-  console.log(data);
+  if (req.method != "POST") throw new AppError("Forbidden Request", 403);
 
-  if (data.email && data.uid) {
-    const docRef = doc(firestore, "/users", data.uid);
+  const { email, password } = bodyValidator(loginSchema, req);
 
-    const docExits = await getDoc(docRef);
+  const data = await AuthService.login(email, password);
 
-    if (!docExits.exists()) {
-      await setDoc(docRef, { ...data });
+  const tokens = {
+    accessToken: generateAccessToken(data),
+    refreshToken: generateRefreshToken(data),
+  };
 
-      setCookie("bill_book_uid", data.uid, {
-        req,
-        maxAge: 900000,
-        httpOnly: true,
-        sameSite: isSecure ? "none" : "lax",
-        secure: isSecure,
-      });
+  reponseWithCookie(req, res, tokens.refreshToken, {
+    data: { ...data, ...tokens },
+    message: "Login Successful",
+  });
 
-      res.json({ message: "sucess", status: 200, credentials: data });
-      return;
-    }
 
-    const docData = docExits.data() as UserDataInterface;
-
-    setCookie("bill_book_uid", docData.uid, {
-      req,
-      res,
-      maxAge: 900000,
-      httpOnly: true,
-      sameSite: isSecure ? "none" : "lax",
-      secure: isSecure,
-    });
-
-    res.json({ message: "sucess", status: 200, credentials: docData });
-  }
 }
+
+export default withCors(withErrorHandler(handler));
+

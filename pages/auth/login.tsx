@@ -1,63 +1,45 @@
-import { Button } from "@mui/material";
-import React from "react";
-import GoogleIcon from "@mui/icons-material/Google";
-import { useLoadingContext } from "@/components/context/loading_context";
-import { auth } from "@/firebase.client";
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import {
-  AuthResponseConfig,
-  UserDataInterface,
-} from "@/components/utils/interfaces";
-import SendData from "@/components/utils/sendData";
-import { useRouter } from "next/router";
-import { useUserContext } from "@/components/context/user_context";
+import { Button, TextField } from "@mui/material";
+import { useState } from "react";
+import styles from "../../styles/Login.module.css";
 
 export default function Login() {
-  const { loading, setLoading } = useLoadingContext();
-  const provider = new GoogleAuthProvider();
-  const router = useRouter();
-  const { setUserCred } = useUserContext();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  const handlePopUp = async () => {
-    setLoading(true);
-    const userCred = await signInWithPopup(auth, provider).then((user) => {
-      return {
-        display_name: user.user.displayName || user.user.email,
-        email: user.user.email,
-        created_at: user.user.metadata.creationTime
-          ? new Date(user.user.metadata.creationTime).getTime()
-          : new Date().getTime(),
-        uid: user.user.uid,
-        profile_url: user.user.photoURL || "",
-      } as UserDataInterface;
-    });
-
-    const response = (await SendData({
-      data: userCred,
-      route: "/api/auth/login",
-      credentials: true,
-    })) as AuthResponseConfig;
-    setLoading(false);
-    if (response.status == 200) {
-      setUserCred(response.credentials);
-      router.push("/");
-    }
-  };
+  const handleSubmit = async () => {};
 
   return (
-    <div className="home_container">
-      <div>
-        <h1>Sign in to BillBook</h1>
+    <div className={styles.login_container}>
+      <div className={styles.login_card}>
+        <h1>BillBook</h1>
+        <p>Sign in to manage your bills and expenses.</p>
+
+        <TextField
+          fullWidth
+          label="Email"
+          type="email"
+          margin="normal"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+
+        <TextField
+          fullWidth
+          label="Password"
+          type="password"
+          margin="normal"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+
         <Button
-          component="label"
+          fullWidth
           variant="contained"
-          loading={loading}
-          loadingPosition="start"
-          tabIndex={-1}
-          startIcon={<GoogleIcon />}
-          onClick={handlePopUp}
+          size="large"
+          sx={{ mt: 2 }}
+          onClick={handleSubmit}
         >
-          Continue With Google
+          Sign In
         </Button>
       </div>
     </div>

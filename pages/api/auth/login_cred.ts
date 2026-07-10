@@ -1,42 +1,44 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import {
   AuthResponseConfig,
-  dummyCred,
-  UserDataInterface,
 } from "@/components/utils/interfaces";
-import { firestore } from "@/firebase.server";
-import { getDoc, doc } from "firebase/firestore";
-export default async function (
+import { getDoc } from "firebase/firestore";
+import withCors from "@/src/server/middlewares/cors";
+import { withErrorHandler } from "@/src/server/middlewares/withErrorHandler";
+import { userDocRefMaker } from "@/src/server/db/db.module";
+import reponseWithCookie from "@/src/server/utils/responseWithCookie";
+import { generateAccessToken, generateRefreshToken } from "@/src/server/middlewares/jwt";
+import { User } from "@/src/server/utils/interfaces";
+export async function handler(
   req: NextApiRequest,
   res: NextApiResponse<AuthResponseConfig>
 ) {
-  if (req.method == "GET") {
-    const uid = req.cookies["bill_book_uid"] || false;
 
-    if (!uid) {
-      res.json({
-        message: "sucess",
-        status: 200,
-        credentials: dummyCred,
-      });
-      return;
-    }
 
-    const docRef = doc(firestore, "/users", uid);
+  if (req.method != "GET") throw new Error("Method not allowed");
 
-    const docExits = await getDoc(docRef);
+  const uid = req.cookies["bill_book_uid"] || false;
 
-    if (!docExits.exists()) {
-      res.json({
-        message: "sucess",
-        status: 200,
-        credentials: dummyCred,
-      });
-      return;
-    }
+  if (!uid) throw new Error("Unauthorized Request");
 
-    const docData = docExits.data() as UserDataInterface;
+  const userDocRef = userDocRefMaker(uid);
 
-    res.json({ message: "sucess", status: 200, credentials: docData });
+  const userDataSnap = await getDoc(userDocRef);
+
+  if (!userDataSnap.exists() || !userDataSnap.data()) throw new Error("User data not found");
+
+  const userData = userDataSnap.data() as User;
+
+  const tokens = {
+    accessToken: generateAccessToken(userData),
+    refreshToken: generateRefreshToken(userData),
   }
+
+  return reponseWithCookie(req, res, uid, {
+    data: { ...userData, ...tokens },
+    message: "User data fetched successfully",
+  });
 }
+
+export default withCors(withErrorHandler(handler));
+

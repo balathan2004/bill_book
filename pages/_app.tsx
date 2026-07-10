@@ -1,27 +1,19 @@
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
-import { NavbarHolder } from "@/components/context/navbar_context";
-import { LoaderHolder } from "@/components/context/loading_context";
-import { ReplyHolder } from "@/components/context/reply_context";
 import DrawerAppBar from "@/components/elements/navbar";
 import ContextWrapper from "@/components/context/context.wrapper";
-import { UserHolder } from "@/components/context/user_context";
+
+import { Provider } from "react-redux";
+import { store } from "@/src/redux/store";
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <div className="container">
-    <NavbarHolder>
-      <LoaderHolder>
-        <ReplyHolder>
-          <UserHolder>
-            <DrawerAppBar />
-            <ContextWrapper>
-
-              <Component {...pageProps} />
-            </ContextWrapper>
-          </UserHolder>
-        </ReplyHolder>
-      </LoaderHolder>
-    </NavbarHolder>
+      <Provider store={store}>
+        <DrawerAppBar />
+        <ContextWrapper>
+          <Component {...pageProps} />
+        </ContextWrapper>
+      </Provider>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import { docInterface, ResponseConfig } from "@/components/utils/interfaces";
-import { firestore } from "@/firebase.server";
-import {  doc, getDoc, updateDoc } from "firebase/firestore";
+import { firestore } from "@/src/server/db/firebase.server";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function (

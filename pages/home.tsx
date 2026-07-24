@@ -1,123 +1,132 @@
-import React, { useEffect, useState } from "react";
-import {
-  Box,
-  InputLabel,
-  MenuItem,
-  Select,
-  TextField,
-  Typography,
-} from "@mui/material";
-import _ from "lodash";
-import { ParsedUrlQuery } from "querystring";
-import { GetServerSidePropsContext } from "next";
-import { docResponseConfig, docInterface } from "@/components/utils/interfaces";
-import { useUserContext } from "@/components/context/user_context";
+import React, { useState } from "react";
+import { Box, MenuItem, Select, TextField } from "@mui/material";
 import AddExpenseDoc, {
   formatWithCommas,
 } from "@/components/elements/addExpenseDoc";
-import SingleCard from "@/components/elements/singleCard";
 import styles from "@/styles/home.module.css";
 import ShortUniqueId from "short-unique-id";
+import { useAuth } from "@/src/redux/api/authSlice";
+import { InvoiceDoc, EditableBillDoc } from "@/src/server/utils/interfaces";
+import {
+  useDeleteDocMutation,
+  useGetAllDocsQuery,
+  useUpdateDocMutation,
+} from "@/src/redux/api/docsApi";
+import { OrderByDirection } from "firebase/firestore";
+import { useGetAlltagsQuery } from "@/src/redux/api/tagsApi";
+import InvoiceContainer from "@/components/elements/InvoiceContainer";
 const uuid = new ShortUniqueId({ length: 20 });
-type sortingTypes = "ascending" | "decending" | "latest" | "oldest" | "by_name";
 
-export const newDoc = (uid: string) => {
+export const newDoc = (): EditableBillDoc => {
   const now = Date.now();
   return {
     doc_id: uuid.rnd(),
-    uid: uid,
     created_at: now,
     invoice_time: now,
     name: "",
     quantity: 1,
     price: 0,
+    invoice_type: "income",
     gross_price: 0,
     description: "",
   };
 };
 
-export default function Home({ data }: { data: docInterface[] }) {
-  const { userCred } = useUserContext();
-  const [docData, setDocData] = useState<docInterface[]>(data);
-  const [showingDocs, setShowingDocs] = useState<docInterface[]>(docData);
+const UUID = new ShortUniqueId({ length: 24 });
 
-  const [editableDoc, setEditableDoc] = useState<null | docInterface>(null);
+type unmappedSortKeys = "latest" | "oldest" | "price_asc" | "price_desc";
 
-  const [selectedDoc, setSelectedDoc] = useState<string | null>(null);
+type queryType = {
+  sort: keyof InvoiceDoc;
+  orderBy: OrderByDirection;
+};
 
-  const [sortBy, setSortBy] = useState<sortingTypes>("latest");
+const sortMap: Record<unmappedSortKeys, queryType> = {
+  latest: {
+    sort: "invoice_time",
+    orderBy: "desc",
+  },
+  oldest: {
+    sort: "invoice_time",
+    orderBy: "asc",
+  },
+  price_asc: {
+    sort: "gross_price",
+    orderBy: "asc",
+  },
+  price_desc: {
+    sort: "gross_price",
+    orderBy: "desc",
+  },
+};
 
-  const handleInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
+export default function Home() {
+  const { userData } = useAuth();
 
-    if (!value) {
-      setShowingDocs(docData);
-    }
+  const { data: { data: options = [] } = {} } = useGetAlltagsQuery({});
+  const [query, setQuery] = useState<queryType>({
+    orderBy: "desc",
+    sort: "invoice_time",
+  });
 
-    const filtered = docData.filter((doc) => doc.name.includes(value));
-    setShowingDocs(filtered);
+  const { data: { data: docData } = {} } = useGetAllDocsQuery(query);
+
+  const [updateDoc, { isLoading }] = useUpdateDocMutation();
+
+  const [deleteDoc] = useDeleteDocMutation();
+
+  const [editableDoc, setEditableDoc] = useState<EditableBillDoc>(newDoc());
+
+  const handleTotal = (docData: InvoiceDoc[]) => {
+    const incomeTotal = docData
+      .filter((item) => item.invoice_type === "income")
+      .reduce((sum, item) => (sum += item.gross_price), 0);
+
+    const expensetotal = docData
+      .filter((item) => item.invoice_type === "expense")
+      .reduce((sum, item) => (sum += item.gross_price), 0);
+
+    return incomeTotal - expensetotal;
   };
-
-  function sortingElements(data: docInterface[], sortBy: sortingTypes) {
-    const copiedData = data.slice();
-
-    switch (sortBy) {
-      case "ascending":
-        return copiedData.sort((a, b) => a.gross_price - b.gross_price);
-      case "decending":
-        return copiedData.sort((a, b) => b.gross_price - a.gross_price);
-      case "latest":
-        return copiedData.sort((a, b) => b.invoice_time - a.invoice_time);
-      case "oldest":
-        return copiedData.sort((a, b) => a.invoice_time - b.invoice_time);
-      case "by_name":
-        return _.sortBy(copiedData, "name");
-      default:
-        return copiedData;
-    }
-  }
-
-  const handleTotal = (docData: docInterface[]) => {
-    const total = docData.reduce((sum, item) => (sum += item.gross_price), 0);
-
-    return total;
-  };
-
-  const resetAddDoc = () => {
-    if (userCred && userCred.uid) {
-      setSelectedDoc(null);
-      setEditableDoc(newDoc(userCred.uid));
-    }
-  };
-
-  useEffect(() => {
-    if (userCred && userCred.uid) {
-      setEditableDoc(newDoc(userCred.uid));
-    }
-  }, [userCred]);
-
-  useEffect(() => {
-    if (userCred) {
-      if (selectedDoc) {
-        const doc = docData.find((doc) => doc.doc_id == selectedDoc);
-        setEditableDoc(doc || null);
-      } else {
-        setEditableDoc(newDoc(userCred?.uid));
-      }
-    }
-  }, [selectedDoc]);
-
-  useEffect(() => {
-    if (docData.length > 0) setShowingDocs(docData);
-  }, [docData]);
-
-  useEffect(() => {
-    setShowingDocs(sortingElements(showingDocs, sortBy));
-  }, [sortBy]);
 
   const handleSelect = (event: any) => {
-    const value = event.target.value as sortingTypes;
-    setSortBy(value);
+    const value = event.target.value as unmappedSortKeys;
+
+    setQuery(sortMap[value]);
+  };
+
+  const handleSubmit = async () => {
+    if (!userData?.uid || !editableDoc?.price || !editableDoc?.quantity) return;
+
+    try {
+      const fullData = {
+        ...editableDoc,
+        created_at: editableDoc.created_at || new Date().getTime(),
+        uid: userData.uid,
+        gross_price: editableDoc.price * editableDoc.quantity,
+        doc_id: editableDoc.doc_id || UUID.randomUUID(),
+        tags: (editableDoc.tags ?? []).map((tag) =>
+          typeof tag === "string" ? tag : tag.id,
+        ),
+      } as InvoiceDoc;
+
+      const res = await updateDoc(fullData).unwrap();
+
+      resetEditableDoc();
+    } catch (err) {
+      console.log({ err });
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    const res = await deleteDoc(id)
+      .unwrap()
+      .then((res) => console.log({ res }))
+      .catch((err) => console.log({ err }));
+  };
+
+  const resetEditableDoc = () => {
+    setEditableDoc(newDoc());
   };
 
   return (
@@ -125,21 +134,24 @@ export default function Home({ data }: { data: docInterface[] }) {
       <div className={styles.home}>
         <div className={styles.center_container}>
           <h1>Your Invoices</h1>
-          {userCred && editableDoc ? (
+          {userData && (
             <>
               <nav>
                 <div>
-                  <AddExpenseDoc
-                    setDocData={setDocData}
-                    data={editableDoc}
-                    resetAddDoc={resetAddDoc}
-                    docData={docData}
-                  />
+                  {editableDoc && (
+                    <AddExpenseDoc
+                      allOptions={options}
+                      onClear={resetEditableDoc}
+                      onSubmit={handleSubmit}
+                      setData={setEditableDoc}
+                      data={editableDoc}
+                      allDocs={docData || []}
+                    />
+                  )}
                 </div>
 
                 <div className={styles.items_searchbar}>
-                  <TextField placeholder="search" onChange={handleInput} />
-                  <InputLabel>Sort By</InputLabel>
+                  <TextField placeholder="search" />
                   <Select
                     defaultValue="latest"
                     onChange={handleSelect}
@@ -148,90 +160,40 @@ export default function Home({ data }: { data: docInterface[] }) {
                   >
                     <MenuItem value="latest">Latest</MenuItem>
                     <MenuItem value="oldest">Oldest</MenuItem>
-                    <MenuItem value="ascending">Price (ascending)</MenuItem>
-                    <MenuItem value="decending">Price (decending)</MenuItem>
-                    <MenuItem value="by_name">By Name</MenuItem>
+                    <MenuItem value="price_asc">Price (ascending)</MenuItem>
+                    <MenuItem value="price_desc">Price (decending)</MenuItem>
                   </Select>
                 </div>
               </nav>
 
-              <div className={styles.items_container}>
-                {showingDocs.map((item) => (
-                  <SingleCard
-                    data={item}
-                    changeDocData={setDocData}
-                    key={item.doc_id}
-                    isActiveEdit={selectedDoc}
-                    setEditableDoc={setSelectedDoc}
-                  />
-                ))}
-              </div>
-              <footer className={styles.footer}>
-                <Box
-                  sx={{
-                    backgroundColor: "white",
-                    borderTop: "1px solid #ccc",
-                    padding: 2,
-                    textAlign: "right",
-                    boxShadow: 2,
-                  }}
-                >
-                  <Typography variant="h6">
-                    Total: ₹{formatWithCommas(handleTotal(showingDocs))}
-                  </Typography>
-                </Box>
-              </footer>
+              <InvoiceContainer
+                currentDoc={editableDoc}
+                invoices={docData || []}
+                setCurrentDoc={(item) => setEditableDoc(item)}
+                onCancelEdit={resetEditableDoc}
+                onDelete={(id) => handleDelete(id)}
+              />
+
+              <Box
+                sx={{
+                  position: "sticky",
+                  bottom: 0,
+                  backgroundColor: "background.paper",
+                  borderTop: "1px solid #ccc",
+                  // p: 2,
+                  zIndex: 10,
+                }}
+              >
+                <footer className={styles.footer}>
+                  <h2 style={{ textAlign: "right", paddingRight: 12 }}>
+                    Total: ₹{formatWithCommas(handleTotal(docData || []))}
+                  </h2>
+                </footer>
+              </Box>
             </>
-          ) : null}
+          )}
         </div>
       </div>
     </div>
   );
-}
-
-export async function getServerSideProps(
-  context: GetServerSidePropsContext<ParsedUrlQuery>
-) {
-  try {
-    const uid = context.req.cookies.bill_book_uid;
-    if (!uid) {
-      return {
-        redirect: {
-          destination: "/auth/login",
-          permanent: false,
-        },
-      };
-    }
-
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_DomainUrl}/api/docs/get_docs`,
-      {
-        body: JSON.stringify({ uid }),
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
-    const res = (await response.json()) as docResponseConfig;
-
-    console.log(res);
-
-    if (res.status == 200) {
-      return {
-        props: {
-          data: res.docData,
-        },
-      };
-    } else {
-      return {
-        props: {
-          data: [],
-        },
-      };
-    }
-  } catch (err) {
-    throw new Error(err as string);
-  }
 }

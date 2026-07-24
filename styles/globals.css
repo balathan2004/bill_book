@@ -10,9 +10,10 @@
   min-height: calc(100vh - 80px);
   display: flex;
   flex-direction: column;
+  overflow-x: hidden;
 }
 
-.margin_container{
+.margin_container {
   margin: 1rem;
 }
 

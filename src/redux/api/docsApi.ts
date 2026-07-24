@@ -1,22 +1,18 @@
-import {
-  DataRes,
-  Doc,
-  ListRes,
-  ResponseConfig,
-} from "@/server/utils/interfaces";
+
+import { InvoiceDoc, DataRes, ListRes, ResponseConfig } from "@/src/server/utils/interfaces";
 import { baseApi } from "./baseApi";
 
 const docsApis = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    createDoc: builder.mutation<ResponseConfig, Doc>({
+    createDoc: builder.mutation<ResponseConfig, InvoiceDoc>({
       query: (data) => ({
-        url: "/doc/",
+        url: "/api/doc",
         method: "POST",
         body: { data },
       }),
       invalidatesTags: ["docs"],
     }),
-    updateDoc: builder.mutation<ResponseConfig, Doc>({
+    updateDoc: builder.mutation<ResponseConfig, InvoiceDoc>({
       query: (data) => ({
         url: `/doc/${data.doc_id}`,
         method: "PUT",
@@ -31,20 +27,20 @@ const docsApis = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["docs"],
     }),
-    getAllDocs: builder.query<ListRes<Doc>, object>({
+    getAllDocs: builder.query<ListRes<InvoiceDoc>, object>({
       query: (params) => ({
-        url: `/doc/`,
+        url: `/docs/`,
         params: { ...params },
       }),
       providesTags: ["docs"],
     }),
-    getDoc: builder.query<DataRes<Doc>, string>({
+    getDoc: builder.query<DataRes<InvoiceDoc>, string>({
       query: (docName) => ({
         url: `/doc/${docName}`,
       }),
       providesTags: ["docs"],
     }),
-    getSingleDoc: builder.query<DataRes<Doc>, string>({
+    getSingleDoc: builder.query<DataRes<InvoiceDoc>, string>({
       query: (doc_id) => ({
         url: `/public/${doc_id}`,
       }),

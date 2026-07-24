@@ -2,7 +2,7 @@ import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import DrawerAppBar from "@/components/elements/navbar";
 import ContextWrapper from "@/components/context/context.wrapper";
-
+import { ToastContainer, toast } from "react-toastify";
 import { Provider } from "react-redux";
 import { store } from "@/src/redux/store";
 export default function App({ Component, pageProps }: AppProps) {
@@ -12,6 +12,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <DrawerAppBar />
         <ContextWrapper>
           <Component {...pageProps} />
+          <ToastContainer />
         </ContextWrapper>
       </Provider>
     </div>

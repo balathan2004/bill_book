@@ -1,8 +1,5 @@
-import {
-  DataRes,
-  ResponseConfig,
-  User,
-} from "@/server/utils/interfaces";
+
+import { DataRes, ResponseConfig, User } from "@/src/server/utils/interfaces";
 import { baseApi } from "./baseApi";
 
 const authApi = baseApi.injectEndpoints({
@@ -24,7 +21,7 @@ const authApi = baseApi.injectEndpoints({
       query: (payload) => ({
         url: "/auth/register",
         method: "POST",
-        body: payload,
+        body: { data: payload },
       }),
     }),
     getLoginCred: builder.query<DataRes<User>, void>({

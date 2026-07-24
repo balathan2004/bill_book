@@ -1,4 +1,4 @@
-import { auth } from "@/components/firebase_configs/firebase_client";
+import { auth } from "../db/firebase.server";
 import {
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,
@@ -29,6 +29,8 @@ export const AuthService = {
       await createUserWithEmailAndPassword(auth, email, password)
     ).user;
 
+
+
     const data: User = {
       email: email,
       display_name: userDoc.displayName
@@ -41,11 +43,18 @@ export const AuthService = {
       createdAt: new Date().getTime(),
     };
 
-    await updateDoc(userDocRefMaker(userDoc.uid), userDoc);
+    console.log({ data });
+
+    await updateDoc(userDocRefMaker(userDoc.uid), data).catch((err) => {
+      console.error(err);
+      throw new Error("Failed to create user document");
+    });
 
     return data;
   },
   login_cred: async (uid: string) => {
+
+    console.log({ uid }, "login_cred");
     const docRef = userDocRefMaker(uid);
     const data = (await fetchDoc(docRef)) as User;
 

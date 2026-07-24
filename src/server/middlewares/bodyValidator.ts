@@ -8,8 +8,6 @@ export function bodyValidator<S extends ZodTypeAny>(
 ): S["_output"] {
   const { data } = req.body;
 
-  console.log({ data }, "validator");
-
   const result = schema.safeParse(data);
 
   if (!result.success) {

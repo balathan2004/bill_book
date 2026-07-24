@@ -5,7 +5,7 @@ const isDev = process.env.NODE_ENV == "production";
 const reponseWithCookie = (
   req: NextApiRequest,
   res: NextApiResponse,
-  uid: string,
+  refreshToken: string,
   responseObject: {
     data?: User | string,
     message: string
@@ -13,7 +13,7 @@ const reponseWithCookie = (
 
 ) => {
 
-  setCookie("bill_book_token", uid, {
+  setCookie("bill_book_token", refreshToken, {
     req: req,
     res: res,
     maxAge: 2592000000,

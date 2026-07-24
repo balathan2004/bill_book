@@ -10,25 +10,25 @@ import { withErrorHandler } from "@/src/server/middlewares/withErrorHandler";
 import { AuthResponseConfig } from "@/src/server/utils/interfaces";
 
 export async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<AuthResponseConfig>
+    req: NextApiRequest,
+    res: NextApiResponse<AuthResponseConfig>
 ) {
 
-  if (req.method != "POST") throw new AppError("Forbidden Request", 403);
+    if (req.method != "POST") throw new AppError("Forbidden Request", 403);
+    console.log(req.body, "register api");
+    const { email, password } = bodyValidator(loginSchema, req);
 
-  const { email, password } = bodyValidator(loginSchema, req);
+    const data = await AuthService.register(email, password);
 
-  const data = await AuthService.login(email, password);
+    const tokens = {
+        accessToken: generateAccessToken(data),
+        refreshToken: generateRefreshToken(data),
+    };
 
-  const tokens = {
-    accessToken: generateAccessToken(data),
-    refreshToken: generateRefreshToken(data),
-  };
-
-  reponseWithCookie(req, res, tokens.refreshToken, {
-    data: { ...data, ...tokens },
-    message: "Login Successful",
-  });
+    reponseWithCookie(req, res, tokens.refreshToken, {
+        data: { ...data, ...tokens },
+        message: "Login Successful",
+    });
 
 
 }

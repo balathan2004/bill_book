@@ -1,5 +1,5 @@
-import { docInterface, docResponseConfig } from "@/components/utils/interfaces";
-import { Button, TextField } from "@mui/material";
+import { useGetAllDocsQuery } from "@/src/redux/api/docsApi";
+import { Button } from "@mui/material";
 import { GetServerSidePropsContext } from "next";
 import { ParsedUrlQuery } from "querystring";
 import { DataGrid } from "react-data-grid";
@@ -40,35 +40,34 @@ export const columns = [
   },
 ];
 
-interface Props {
-  data: docInterface[];
-}
+export default function Invoice() {
+  const { data: { data: docData = [] } = {} } = useGetAllDocsQuery({});
 
-export default function Invoice({ data }: Props) {
   function exportToExcel() {
-    const newData = data.map((ele) => {
-      const { doc_id, uid, ...others } = ele;
+    const newData =
+      docData?.map((ele) => {
+        const { doc_id, uid, ...others } = ele;
 
-      return {
-        ...others,
-        invoice_time: new Date(others.invoice_time).toLocaleString("en-IN", {
-          day: "2-digit",
-          month: "2-digit",
-          year: "2-digit",
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: true,
-        }),
-        created_at: new Date(others.created_at).toLocaleString("en-IN", {
-          day: "2-digit",
-          month: "2-digit",
-          year: "2-digit",
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: true,
-        }),
-      };
-    });
+        return {
+          ...others,
+          invoice_time: new Date(others.invoice_time).toLocaleString("en-IN", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true,
+          }),
+          created_at: new Date(others.created_at).toLocaleString("en-IN", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true,
+          }),
+        };
+      }) || [];
 
     const worksheet = XLSX.utils.json_to_sheet(newData);
     const workbook = XLSX.utils.book_new();
@@ -81,58 +80,11 @@ export default function Invoice({ data }: Props) {
       <DataGrid
         style={{ backgroundColor: "white" }}
         columns={columns}
-        rows={data}
+        rows={docData}
       />
       <div>
         <Button onClick={exportToExcel}>Download</Button>
       </div>
     </div>
   );
-}
-
-export async function getServerSideProps(
-  context: GetServerSidePropsContext<ParsedUrlQuery>
-) {
-  try {
-    const uid = context.req.cookies.bill_book_uid;
-    if (!uid) {
-      return {
-        redirect: {
-          destination: "/auth/login",
-          permanent: false,
-        },
-      };
-    }
-
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_DomainUrl}/api/docs/get_docs`,
-      {
-        body: JSON.stringify({ uid }),
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
-    const res = (await response.json()) as docResponseConfig;
-
-    console.log(res);
-
-    if (res.status == 200) {
-      return {
-        props: {
-          data: res.docData,
-        },
-      };
-    } else {
-      return {
-        props: {
-          data: [],
-        },
-      };
-    }
-  } catch (err) {
-    throw new Error(err as string);
-  }
 }

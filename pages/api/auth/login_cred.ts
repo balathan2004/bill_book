@@ -1,44 +1,32 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import {
-  AuthResponseConfig,
-} from "@/components/utils/interfaces";
-import { getDoc } from "firebase/firestore";
+import { NextApiResponse } from "next";
 import withCors from "@/src/server/middlewares/cors";
 import { withErrorHandler } from "@/src/server/middlewares/withErrorHandler";
-import { userDocRefMaker } from "@/src/server/db/db.module";
 import reponseWithCookie from "@/src/server/utils/responseWithCookie";
-import { generateAccessToken, generateRefreshToken } from "@/src/server/middlewares/jwt";
-import { User } from "@/src/server/utils/interfaces";
+import { generateAccessToken, generateRefreshToken, withJwt } from "@/src/server/middlewares/jwt";
+import { AuthResponseConfig, JwtRequest, User } from "@/src/server/utils/interfaces";
+import { AuthService } from "@/src/server/services/auth.services";
 export async function handler(
-  req: NextApiRequest,
+  req: JwtRequest,
   res: NextApiResponse<AuthResponseConfig>
 ) {
 
-
   if (req.method != "GET") throw new Error("Method not allowed");
 
-  const uid = req.cookies["bill_book_uid"] || false;
+  const user = req.user as User;
+  if (!user) throw new Error("Unauthorized Request");
 
-  if (!uid) throw new Error("Unauthorized Request");
-
-  const userDocRef = userDocRefMaker(uid);
-
-  const userDataSnap = await getDoc(userDocRef);
-
-  if (!userDataSnap.exists() || !userDataSnap.data()) throw new Error("User data not found");
-
-  const userData = userDataSnap.data() as User;
+  const data = await AuthService.login_cred(user.uid);
 
   const tokens = {
-    accessToken: generateAccessToken(userData),
-    refreshToken: generateRefreshToken(userData),
+    accessToken: generateAccessToken(data),
+    refreshToken: generateRefreshToken(data),
   }
 
-  return reponseWithCookie(req, res, uid, {
-    data: { ...userData, ...tokens },
+  return reponseWithCookie(req, res, user.uid, {
+    data: { ...data, ...tokens },
     message: "User data fetched successfully",
   });
 }
 
-export default withCors(withErrorHandler(handler));
+export default withCors(withErrorHandler(withJwt(handler)));
 

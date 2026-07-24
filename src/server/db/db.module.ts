@@ -11,21 +11,32 @@ import {
   setDoc,
   orderBy,
 } from "firebase/firestore";
-import { AppError } from "../utils/appError";
-import { Doc, SortField, sortOrder } from "../utils/interfaces";
+import { InvoiceDoc } from "../utils/interfaces";
+
 
 const userDocRefMaker = (userId: string) => {
   return doc(firestore, "users", userId);
 
 };
 
-const docRefMaker = (userId: string, docId: string) => {
-  return doc(firestore, "documents", userId, "userDocs", docId);
+const invoiceRefMaker = (userId: string, docId: string) => {
+  return doc(firestore, "invoices", userId, "docs", docId);
 };
 
-const noteDocRefMaker = (userId: string, noteId: string) => {
-  return doc(firestore, "documents", userId, "userDocs", noteId);
+const tagRefMaker = (userId: string, docId: string) => {
+  return doc(firestore, "tags", userId, "docs", docId);
+}
+
+const invoiceCollectionRefMaker = (userId: string) => {
+  return collection(firestore, "invoices", userId, "docs");
 };
+
+
+const tagsCollectionRefMaker = (userId: string) => {
+  return collection(firestore, "tags", userId, "docs");
+}
+
+
 
 const fetchDoc = async (
   docRef: DocumentReference<DocumentData, DocumentData>,
@@ -42,35 +53,32 @@ const updateDoc = async (
   docRef: DocumentReference<DocumentData, DocumentData>,
   data: any,
 ) => {
+
   await setDoc(docRef, data, { merge: true });
 };
 
-const documentCollectionRefMaker = (userId: string) => {
-  return collection(firestore, "documents", userId, "userDocs");
-};
+
+
 
 const getCollectionDocs = async (
   collectionRef: CollectionReference<DocumentData, DocumentData>,
-  sort: SortField,
-  order: sortOrder,
+  sort: any,
+  order: any,
 ) => {
-  const que = query(collectionRef, orderBy(sort, order),);
-
+  const que = query(collectionRef, orderBy(sort, order));
 
   const docs = await getDocs(que);
 
-  if (docs.empty) {
-    throw new AppError("No documents found", 404);
-  }
-  return docs.docs.map((doc) => doc.data() as Doc);
+  return docs.docs.map((doc) => doc.data()) || []
 };
 
 export {
   userDocRefMaker,
-  noteDocRefMaker,
   fetchDoc,
   updateDoc,
-  docRefMaker,
-  documentCollectionRefMaker,
+  invoiceRefMaker,
+  tagRefMaker,
+  invoiceCollectionRefMaker,
+  tagsCollectionRefMaker,
   getCollectionDocs,
 };

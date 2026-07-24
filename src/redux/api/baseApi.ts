@@ -1,16 +1,16 @@
 // baseApi.ts
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { RootState } from "../store";
-import { DataRes, User } from "@/server/utils/interfaces";
-import { setAccessToken } from "./authSlice";
-import { ref } from "firebase/storage";
+import { User } from "@/src/server/utils/interfaces";
+import { logout, setAccessToken, setUser } from "./authSlice";
+import { da } from "zod/v4/locales";
 
 const baseQuery = fetchBaseQuery({
   baseUrl: "/api",
   // no credentials here
   prepareHeaders: (headers, { getState }) => {
     const state = getState() as RootState;
-    const token = state.auth.userData.accessToken;
+    const token = state.auth?.accessToken;
     if (token) {
       headers.set("Authorization", `Bearer ${token}`);
     }
@@ -26,14 +26,17 @@ const baseQueryWithAuth = async (args: any, api: any, extraOptions: any) => {
     const state = api.getState() as RootState;
 
     const refreshToken =
-      state.auth.userData.refreshToken ||
+      state.auth?.refreshToken ||
       localStorage.getItem("refreshToken") ||
       null;
 
-    console.log({ refreshToken }, "refresh token in baseQueryWithAuth");
+
+    console.log({ refreshToken }, "baseApi");
+
+
 
     if (!refreshToken) {
-      api.logout();
+      api.dispatch(logout());
       return result;
     }
 
@@ -52,10 +55,10 @@ const baseQueryWithAuth = async (args: any, api: any, extraOptions: any) => {
       const data = responseData?.data as User;
 
       localStorage.setItem("accessToken", data.accessToken || "");
-      api.dispatch(setAccessToken(data.accessToken));
+      api.dispatch(setUser(data), setAccessToken(data.accessToken));
       result = await baseQuery(args, api, extraOptions);
     } else {
-      api.logout();
+      api.dispatch(logout());
     }
   }
   return result;
@@ -63,6 +66,6 @@ const baseQueryWithAuth = async (args: any, api: any, extraOptions: any) => {
 
 export const baseApi = createApi({
   baseQuery: baseQueryWithAuth,
-  tagTypes: ["docs"],
+  tagTypes: ["docs", "tags"],
   endpoints: () => ({}),
 });

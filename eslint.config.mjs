@@ -1,4 +1,4 @@
-import { FlatCompat } from '@eslint/eslintrc'
+import { FlatCompat , globalIgnores } from '@eslint/eslintrc'
  
 const compat = new FlatCompat({
   // import.meta.dirname is available after Node.js v20.11.0
@@ -13,6 +13,13 @@ const eslintConfig = [
       '@next/next/no-page-custom-font': 'off',
     },
   }),
+  globalIgnores([
+    // Default ignores of eslint-config-next:
+    '.next/**',
+    'out/**',
+    'build/**',
+    'next-env.d.ts',
+  ]),
 ]
  
 export default eslintConfig

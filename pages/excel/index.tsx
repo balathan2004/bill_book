@@ -1,9 +1,8 @@
-import React, { Component, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import * as XLSX from "xlsx";
-import { DataGrid, Row } from "react-data-grid";
-import { docInterface } from "@/components/utils/interfaces";
+import { DataGrid } from "react-data-grid";
 import { columns } from "../invoice";
-import styles from '@/styles/excel.module.css'
+import styles from "@/styles/excel.module.css";
 
 export default function UploadPage() {
   const [data, setData] = useState<any[]>([]);
@@ -46,16 +45,21 @@ export default function UploadPage() {
   }, [data]);
 
   return (
-        <div className="home_container">
-    <div className="container">
-      <form>
-        <h1>Upload Excel File</h1>
-       
-        <input type="file" accept=".xls,.xlsx" onChange={handleFileUpload} />
-      </form>
-       <DataGrid  rowHeight={40} style={{height:'100%',width:"90%",margin:"auto"}} className={styles.list}  columns={columns} rows={data}  />
+    <div className="home_container">
+      <div className="container">
+        <form>
+          <h1>Upload Excel File</h1>
+
+          <input type="file" accept=".xls,.xlsx" onChange={handleFileUpload} />
+        </form>
+        <DataGrid
+          rowHeight={40}
+          style={{ height: "100%", width: "90%", margin: "auto" }}
+          className={styles.list}
+          columns={columns}
+          rows={data}
+        />
+      </div>
     </div>
-    
-</div>
   );
 }

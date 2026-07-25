@@ -2,6 +2,7 @@ import React from "react";
 import styles from "@/styles/account.module.css";
 import { formatDistanceToNow } from "date-fns";
 import { useAuth } from "@/src/redux/api/authSlice";
+import Image from "next/image";
 
 export default function Account() {
   const { userData } = useAuth();
@@ -13,10 +14,11 @@ export default function Account() {
           <article>
             <h1>Your Account</h1>
             <div className={styles.img_container}>
-              <img
+              <Image
+                alt="profile_image"
                 referrerPolicy="no-referrer"
                 src={userData?.profile_url}
-              ></img>
+              ></Image>
               <span>{userData?.display_name}</span>
             </div>
             <div className={styles.content}>

@@ -16,7 +16,7 @@ export default function Register() {
     try {
       const data = await register({ email, password }).unwrap();
       toast.success("Account created successfully! Please log in.");
-    } catch (err) {
+    } catch (err: any) {
       toast.error(
         err?.data?.error || err.data || "An error occurred. Please try again.",
       );

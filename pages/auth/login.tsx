@@ -21,7 +21,7 @@ export default function Login() {
       toast.success(data?.message);
 
       router.push("/home");
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
       toast.error(
         err?.data?.error || err.data || "An error occurred. Please try again.",

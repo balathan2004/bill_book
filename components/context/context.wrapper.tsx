@@ -1,11 +1,8 @@
 import React, { ReactNode, useEffect } from "react";
-import { useRouter } from "next/router";
 import { useLazyGetLoginCredQuery } from "@/src/redux/api/authApi";
 import { useAuth } from "@/src/redux/api/authSlice";
 
 export default function ContextWrapper({ children }: { children: ReactNode }) {
-  const router = useRouter();
-
   const [getLoginCred, { data, isLoading, isError }] =
     useLazyGetLoginCredQuery();
 

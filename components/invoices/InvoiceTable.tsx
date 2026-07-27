@@ -19,7 +19,7 @@ type Props = {
   onDelete: (id: string) => void;
 };
 
-export default function InvoiceContainer({
+export default function InvoiceTable({
   invoices,
   currentDoc,
   onCancelEdit,

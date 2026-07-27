@@ -21,29 +21,29 @@ export default function TagPicker({ options, value, onChange }: Props) {
 
   return (
     <Autocomplete
-      style={{ minHeight: 56 }}
       multiple
       options={options}
       value={value}
       onChange={(_, newValue) => onChange(newValue)}
       getOptionLabel={(option) => option.name}
+      sx={{
+        "& .MuiOutlinedInput-root": {
+          minHeight: 56,
+          alignItems: "center",
+        },
+      }}
       renderTags={(value, getTagProps) =>
         value.map((option, index) => (
           <Chip
+            key={index}
             label={option.name}
-            {...getTagProps({ index })}
-            key={option.id}
+            // {...getTagProps({ index })}
+            size="small"
           />
         ))
       }
       renderInput={(params) => (
-        <TextField
-          style={{ minHeight: 56 }}
-          {...params}
-          label="Tags"
-          placeholder="Select tags"
-          size="small"
-        />
+        <TextField {...params} label="Tags" placeholder="Select tags" />
       )}
     />
   );

@@ -1,37 +1,49 @@
 .add_doc form {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-  }
-  
-  /* Default (desktop): 7 per row */
-  .add_doc form .input {
-    flex: 1 1 13%; /* 7 * 13% + gaps = ~100% */
-    min-width: 150px; /* Prevent too small items */
-  }
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
 
-  .add_doc form .input_time{
-    min-width: 200px;
+/* Default (desktop): 7 per row */
+.add_doc form .input {
+  flex: 1 1 13%;
+  /* 7 * 13% + gaps = ~100% */
+  min-width: 120px;
+  /* Prevent too small items */
+}
+
+.add_doc form .count_input {
+  flex: 1 1 5%;
+  /* 7 * 13% + gaps = ~100% */
+  min-width: 48px;
+  /* Prevent too small items */
+}
+
+
+
+
+.add_doc form .input_time {
+  min-width: 200px;
+}
+
+/* Tablet: 3 per row */
+@media (max-width: 1200px) {
+  .add_doc form>* {
+    flex: 1 1 30%;
   }
-  
-  /* Tablet: 3 per row */
-  @media (max-width: 1200px) {
-    .add_doc form > * {
-      flex: 1 1 30%;
-    }
+}
+
+/* Mobile: 2 per row */
+@media (max-width: 800px) {
+  .add_doc form>* {
+    flex: 1 1 47%;
+    /* 2 * 47% + gap = ~100% */
   }
-  
-  /* Mobile: 2 per row */
-  @media (max-width: 800px) {
-    .add_doc form > * {
-      flex: 1 1 47%; /* 2 * 47% + gap = ~100% */
-    }
+}
+
+/* Small mobile: STILL 2 per row */
+@media (max-width: 500px) {
+  .add_doc form>* {
+    flex: 1 1 40%;
   }
-  
-  /* Small mobile: STILL 2 per row */
-  @media (max-width: 500px) {
-    .add_doc form > * {
-      flex: 1 1 40%;
-    }
-  }
-  
+}

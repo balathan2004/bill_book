@@ -14,7 +14,8 @@ import {
 } from "@/src/redux/api/docsApi";
 import { OrderByDirection } from "firebase/firestore";
 import { useGetAlltagsQuery } from "@/src/redux/api/tagsApi";
-import InvoiceContainer from "@/components/elements/InvoiceContainer";
+import InvoiceContainer from "@/components/invoices/invoiceContainer";
+
 const uuid = new ShortUniqueId({ length: 20 });
 
 export const newDoc = (): EditableBillDoc => {
@@ -133,7 +134,7 @@ export default function Home() {
     <div className="home_container">
       <div className={styles.home}>
         <div className={styles.center_container}>
-          <h1>Your Invoices</h1>
+          <h3>Your Invoices</h3>
           {userData && (
             <>
               <nav>
@@ -180,12 +181,19 @@ export default function Home() {
                   bottom: 0,
                   backgroundColor: "background.paper",
                   borderTop: "1px solid #ccc",
-                  // p: 2,
+                  px: 2,
+                  py: 0.5, // smaller vertical padding
                   zIndex: 10,
                 }}
               >
                 <footer className={styles.footer}>
-                  <h2 style={{ textAlign: "right", paddingRight: 12 }}>
+                  <h2
+                    style={{
+                      textAlign: "right",
+                      margin: 0, // remove default h2 margins
+                      paddingRight: 12,
+                    }}
+                  >
                     Total: ₹{formatWithCommas(handleTotal(docData || []))}
                   </h2>
                 </footer>

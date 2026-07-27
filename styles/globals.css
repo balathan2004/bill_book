@@ -11,7 +11,27 @@
   display: flex;
   flex-direction: column;
   overflow-x: hidden;
+  scrollbar-width: none;
+
+  /* IE/Edge */
+  -ms-overflow-style: none;
 }
+
+
+
+
+
+/* Firefox */
+
+
+
+/* Chrome, Safari, Edge */
+.home_container::-webkit-scrollbar {
+  display: none;
+}
+
+
+
 
 .margin_container {
   margin: 1rem;

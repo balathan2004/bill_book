@@ -2,8 +2,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { RootState } from "../store";
 import { User } from "@/src/server/utils/interfaces";
-import { logout, setAccessToken, setUser } from "./authSlice";
-import { da } from "zod/v4/locales";
+
 
 const baseQuery = fetchBaseQuery({
   baseUrl: "/api",
@@ -36,7 +35,7 @@ const baseQueryWithAuth = async (args: any, api: any, extraOptions: any) => {
 
 
     if (!refreshToken) {
-      api.dispatch(logout());
+      api.dispatch({ type: "authSlice/logout" });
       return result;
     }
 
@@ -55,10 +54,20 @@ const baseQueryWithAuth = async (args: any, api: any, extraOptions: any) => {
       const data = responseData?.data as User;
 
       localStorage.setItem("accessToken", data.accessToken || "");
-      api.dispatch(setUser(data), setAccessToken(data.accessToken));
+
+      api.dispatch({
+        payload: data,
+        type: "authSlice/setUser"
+      })
+
+      api.dispatch({
+        payload: data.accessToken,
+        type: "authSlice/setAccessToken"
+      })
+
       result = await baseQuery(args, api, extraOptions);
     } else {
-      api.dispatch(logout());
+      api.dispatch({ type: "authSlice/logout" });
     }
   }
   return result;

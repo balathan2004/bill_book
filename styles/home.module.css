@@ -11,8 +11,8 @@
   height: calc(100vh - 64px);
   width: 100%;
   padding: 24px;
-
 }
+
 
 .center_container h1 {
   text-align: center;
@@ -23,8 +23,18 @@
   flex: 1;
   overflow-y: auto;
   min-height: 0;
+
+  /* Firefox */
+  scrollbar-width: none;
+
+  /* IE/Edge */
+  -ms-overflow-style: none;
 }
 
+/* Chrome, Safari, Edge */
+.items_container::-webkit-scrollbar {
+  display: none;
+}
 
 .items_searchbar {
   display: flex;
@@ -123,6 +133,7 @@
 @media (max-width: 800px) {
   .center_container {
     width: 100%;
+    padding: 8px;
   }
 
   .add_doc {

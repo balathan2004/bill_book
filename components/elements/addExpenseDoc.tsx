@@ -105,7 +105,7 @@ export default function AddExpenseDoc({
           name="quantity"
           placeholder="quantity"
           type="number"
-          className={styles.input}
+          className={styles.count_input}
           value={formatWithCommas(data?.quantity || 0)}
         />
 
@@ -118,7 +118,7 @@ export default function AddExpenseDoc({
           name="price"
           placeholder="price"
           type="number"
-          className={styles.input}
+          className={styles.count_input}
           value={data?.price || 0}
         />
 

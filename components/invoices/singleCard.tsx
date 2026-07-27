@@ -2,18 +2,11 @@ import React from "react";
 import { format, isThisYear } from "date-fns";
 import styles from "@/styles/home.module.css";
 import DeleteIcon from "@mui/icons-material/Delete";
-import {
-  Avatar,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-  TableCell,
-  TableRow,
-} from "@mui/material";
+import { ListItemText, TableCell, TableRow } from "@mui/material";
 import EditSquareIcon from "@mui/icons-material/EditSquare";
 import CheckIcon from "@mui/icons-material/Check";
-import { formatWithCommas } from "./addExpenseDoc";
-import { InvoiceDoc, InvoiceTagItem } from "@/src/server/utils/interfaces";
+import { formatWithCommas } from "../elements/addExpenseDoc";
+import { InvoiceDoc } from "@/src/server/utils/interfaces";
 
 interface props {
   data: InvoiceDoc;
@@ -25,7 +18,7 @@ interface props {
 
 const handleDate = (date: number) => {
   return isThisYear(date)
-    ? format(date, "dd MMM hh:mm a") // e.g., "10 May"
+    ? format(date, "dd-MMM hh:mm a") // e.g., "10 May"
     : format(date, "dd MMM yyyy");
 };
 

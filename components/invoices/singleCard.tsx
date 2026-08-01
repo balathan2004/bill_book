@@ -30,7 +30,12 @@ export default function SingleCard({
   onDelete,
 }: props) {
   return (
-    <TableRow className={styles.income_card}>
+    <TableRow
+      className={styles.income_card}
+      style={{
+        backgroundColor: data.invoice_type === "income" ? "#E8F5E9" : "#FDC086",
+      }}
+    >
       <TableCell>
         <div className={styles.card_left}>
           <div className={styles.name_board}>

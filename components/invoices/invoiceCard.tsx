@@ -37,7 +37,13 @@ export default function InvoiceCard({
   onDelete,
 }: Props) {
   return (
-    <Paper elevation={2} sx={{ p: 2, mb: 2, borderRadius: 3 }}>
+    <Paper
+      style={{
+        backgroundColor: data.invoice_type === "income" ? "#E8F5E9" : "#FDC086",
+      }}
+      elevation={2}
+      sx={{ p: 2, mb: 2, borderRadius: 3 }}
+    >
       {/* Header */}
       <Stack
         direction="row"

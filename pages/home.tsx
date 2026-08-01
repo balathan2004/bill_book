@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, MenuItem, Select, TextField } from "@mui/material";
+import { Box, MenuItem, Select, TextField, Typography } from "@mui/material";
 import AddExpenseDoc, {
   formatWithCommas,
 } from "@/components/elements/addExpenseDoc";
@@ -15,6 +15,7 @@ import {
 import { OrderByDirection } from "firebase/firestore";
 import { useGetAlltagsQuery } from "@/src/redux/api/tagsApi";
 import InvoiceContainer from "@/components/invoices/invoiceContainer";
+import Link from "next/link";
 
 const uuid = new ShortUniqueId({ length: 20 });
 
@@ -64,7 +65,10 @@ const sortMap: Record<unmappedSortKeys, queryType> = {
 export default function Home() {
   const { userData } = useAuth();
 
-  const { data: { data: options = [] } = {} } = useGetAlltagsQuery({});
+  const { data: { data: options = [] } = {} } = useGetAlltagsQuery(
+    {},
+    { refetchOnMountOrArgChange: true },
+  );
   const [query, setQuery] = useState<queryType>({
     orderBy: "desc",
     sort: "invoice_time",
@@ -152,6 +156,15 @@ export default function Home() {
                 </div>
 
                 <div className={styles.items_searchbar}>
+                  <Link href="/tags">
+                    <Typography
+                      variant="h6"
+                      component="span"
+                      sx={{ marginRight: 2, fontSize: "16px" }}
+                    >
+                      Create tag
+                    </Typography>
+                  </Link>
                   <TextField placeholder="search" />
                   <Select
                     defaultValue="latest"

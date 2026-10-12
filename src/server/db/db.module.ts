@@ -10,8 +10,9 @@ import {
   query,
   setDoc,
   orderBy,
+  where,
 } from "firebase/firestore";
-import { InvoiceDoc } from "../utils/interfaces";
+
 
 
 const userDocRefMaker = (userId: string) => {
@@ -64,12 +65,27 @@ const getCollectionDocs = async (
   collectionRef: CollectionReference<DocumentData, DocumentData>,
   sort: any,
   order: any,
+  searchKey?: string,
+  search?: string
 ) => {
-  const que = query(collectionRef, orderBy(sort, order));
+
+
+  let que = query(collectionRef, orderBy(sort, order),);
+
+
+
+  console.log({ searchKey, search });
 
   const docs = await getDocs(que);
 
-  return docs.docs.map((doc) => doc.data()) || []
+  const filteredDocs = docs.docs.map((doc) => doc.data()).filter(item => !item.deleted) || []
+
+  if (searchKey && search) {
+    return filteredDocs.filter(item => item[searchKey].toLowerCase().includes(search.toLowerCase()))
+  }
+
+
+  return filteredDocs
 };
 
 export {

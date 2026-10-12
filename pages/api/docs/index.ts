@@ -16,11 +16,16 @@ async function handler(
   if (req.method !== "GET") throw new Error("Bad Request")
 
   const user = req.user;
-  const params = req.query as { sort: keyof InvoiceDoc, orderBy: OrderByDirection }
+  const params = req.query as { sort: keyof InvoiceDoc, orderBy: OrderByDirection, searchKey?: string, search?: string };
 
   if (!user?.uid) throw new Error("User not found");
 
-  const data = (await DocService.getDocsQuery(user.uid, params.sort, params.orderBy) as InvoiceDoc[]).filter(item => !item.deleted)
+  const data = (await DocService.getDocsQuery(user.uid, params.sort, params.orderBy,
+    params.searchKey, params.search
+
+  ) as InvoiceDoc[]).filter(item => !item.deleted)
+
+
 
   const tags = await TagService.getDocsQuery(user.uid) as InvoiceTagItem[]
 

@@ -21,9 +21,12 @@ export const DocService = {
     return docData as InvoiceDoc;
   },
   // getDocsQuery: async (userId: string, sort: SortField, order: sortOrder) => {
-  getDocsQuery: async (userId: string, sort: keyof InvoiceDoc = "invoice_time", order: OrderByDirection = "desc") => {
+  getDocsQuery: async (userId: string, sort: keyof InvoiceDoc = "invoice_time", order: OrderByDirection = "desc"
+    , searchKey?: string, search?: string
+
+  ) => {
     const collectionRef = invoiceCollectionRefMaker(userId);
-    const allDocs = await getCollectionDocs(collectionRef, sort, order);
+    const allDocs = await getCollectionDocs(collectionRef, sort, order, searchKey, search);
     return allDocs
   },
 

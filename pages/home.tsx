@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, MenuItem, Select, TextField, Typography } from "@mui/material";
 import AddExpenseDoc, {
   formatWithCommas,
@@ -13,9 +13,10 @@ import {
   useUpdateDocMutation,
 } from "@/src/redux/api/docsApi";
 import { OrderByDirection } from "firebase/firestore";
-import { useGetAlltagsQuery } from "@/src/redux/api/tagsApi";
+import { useGetAllTagsQuery } from "@/src/redux/api/tagsApi";
 import InvoiceContainer from "@/components/invoices/invoiceContainer";
 import Link from "next/link";
+import { debounce } from "lodash";
 
 const uuid = new ShortUniqueId({ length: 20 });
 
@@ -41,6 +42,8 @@ type unmappedSortKeys = "latest" | "oldest" | "price_asc" | "price_desc";
 type queryType = {
   sort: keyof InvoiceDoc;
   orderBy: OrderByDirection;
+  searchKey?: string;
+  search?: string;
 };
 
 const sortMap: Record<unmappedSortKeys, queryType> = {
@@ -65,14 +68,19 @@ const sortMap: Record<unmappedSortKeys, queryType> = {
 export default function Home() {
   const { userData } = useAuth();
 
-  const { data: { data: options = [] } = {} } = useGetAlltagsQuery(
-    {},
-    { refetchOnMountOrArgChange: true },
-  );
+  const [search, setSearch] = useState("");
+
+  const { data: { data: options = [] } = {} } = useGetAllTagsQuery({
+    refetchOnMountOrArgChange: true,
+  });
   const [query, setQuery] = useState<queryType>({
     orderBy: "desc",
     sort: "invoice_time",
+    searchKey: "name",
+    search: "",
   });
+
+  const [debouncedSearch, setDebouncedSearch] = useState("");
 
   const { data: { data: docData } = {} } = useGetAllDocsQuery(query);
 
@@ -96,7 +104,6 @@ export default function Home() {
 
   const handleSelect = (event: any) => {
     const value = event.target.value as unmappedSortKeys;
-
     setQuery(sortMap[value]);
   };
 
@@ -134,6 +141,21 @@ export default function Home() {
     setEditableDoc(newDoc());
   };
 
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setDebouncedSearch(search.trim());
+    }, 300);
+
+    return () => clearTimeout(timeout);
+  }, [search]);
+
+  useEffect(() => {
+    setQuery((prev) => ({
+      ...prev,
+      search: debouncedSearch,
+    }));
+  }, [debouncedSearch]);
+
   return (
     <div className="home_container">
       <div className={styles.home}>
@@ -165,7 +187,10 @@ export default function Home() {
                       Create tag
                     </Typography>
                   </Link>
-                  <TextField placeholder="search" />
+                  <TextField
+                    placeholder="search"
+                    onChange={(event) => setSearch(event.target.value)}
+                  />
                   <Select
                     defaultValue="latest"
                     onChange={handleSelect}

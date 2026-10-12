@@ -1,14 +1,18 @@
 import React, { useState } from "react";
-import { TextField, Paper, Typography, Box } from "@mui/material";
+import { TextField, Paper, Typography, Box, IconButton } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import styles from "@/styles/tags.module.css";
+
 import {
-  useGetAlltagsQuery,
+  useDeleteTagMutation,
+  useGetAllTagsQuery,
   useUpdateTagMutation,
 } from "@/src/redux/api/tagsApi";
 import ShortUniqueId from "short-unique-id";
 import { InvoiceTagItem } from "@/src/server/utils/interfaces";
 import { toast } from "react-toastify";
+import TagItem from "@/components/elements/TagItem";
+
 const uuid = new ShortUniqueId({ length: 16 });
 
 const createEmptyTag = () => {
@@ -21,13 +25,33 @@ const createEmptyTag = () => {
 };
 
 export default function TagsScreen() {
-  const { data } = useGetAlltagsQuery({});
-
-  console.log(JSON.stringify(data));
+  const { data: { data: tagData = [] } = {} } = useGetAllTagsQuery({});
 
   const [updateTag, { isLoading }] = useUpdateTagMutation();
 
+  const [deleteTag, { isLoading: isLoadingDelete }] = useDeleteTagMutation();
+
   const [tagState, setTagState] = useState(createEmptyTag());
+
+  const handleDelete = async (id: string) => {
+    const confirm = window.confirm("Are you sure you want to delete this tag?");
+
+    if (!confirm) return;
+
+    deleteTag(id)
+      .unwrap()
+      .then((res) => {
+        toast.success(res.message);
+      })
+      .catch((err) => {
+        toast.error(
+          err?.data?.error ||
+            err.data ||
+            "An error occurred. Please try again.",
+        );
+        console.log({ err });
+      });
+  };
 
   const handleSubmit = async () => {
     if (!tagState.id || !tagState.name) {
@@ -41,6 +65,10 @@ export default function TagsScreen() {
         setTagState(createEmptyTag());
       })
       .catch((err) => console.log({ err }));
+  };
+
+  const handleEdit = (tag: InvoiceTagItem) => {
+    setTagState(tag);
   };
 
   return (
@@ -95,20 +123,13 @@ export default function TagsScreen() {
         </Paper>
 
         <div className={styles.tagsGrid}>
-          {data?.data?.map((tag: any) => (
-            <Paper key={tag.tag_id} elevation={1} className={styles.tagCard}>
-              <Box className={styles.tagHeader}>
-                <span className={styles.tagIcon}>{tag.icon || "🏷️"}</span>
-
-                <Typography fontWeight={600}>{tag.name}</Typography>
-              </Box>
-
-              {tag.icon && (
-                <Typography variant="caption" color="text.secondary">
-                  {tag.icon}
-                </Typography>
-              )}
-            </Paper>
+          {tagData?.map((tag: InvoiceTagItem) => (
+            <TagItem
+              key={tag.id}
+              tag={tag}
+              handleEdit={() => handleEdit(tag)}
+              handleDelete={() => handleDelete(tag.id)}
+            />
           ))}
         </div>
       </div>

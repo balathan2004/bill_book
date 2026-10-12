@@ -20,10 +20,10 @@ const tagsApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["tags"],
     }),
-    getAlltags: builder.query<ListRes<InvoiceTagItem>, object>({
-      query: (params) => ({
+    getAllTags: builder.query<ListRes<InvoiceTagItem>, object>({
+      query: (payload) => ({
         url: `/tags/`,
-        params: { ...params },
+        params: { ...payload },
       }),
       providesTags: ["tags"],
     }),
@@ -39,7 +39,7 @@ const tagsApi = baseApi.injectEndpoints({
 
 export default tagsApi;
 export const {
-  useGetAlltagsQuery,
+  useGetAllTagsQuery,
   useGetSingleTagQuery,
   useDeleteTagMutation,
   useUpdateTagMutation

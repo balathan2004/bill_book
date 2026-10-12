@@ -2,7 +2,6 @@ import { OrderByDirection } from "firebase/firestore";
 import {
   fetchDoc,
   getCollectionDocs,
-  invoiceCollectionRefMaker,
   updateDoc,
   tagRefMaker,
   tagsCollectionRefMaker,
@@ -29,6 +28,7 @@ export const TagService = {
   },
 
   deleteDoc: async (userId: string, doc_id: string) => {
+
     const docRef = tagRefMaker(userId, doc_id);
     const data = await fetchDoc(docRef, "Document not found");
     if (!data) {

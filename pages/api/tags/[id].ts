@@ -37,7 +37,13 @@ async function handler(req: JwtRequest, res: NextApiResponse) {
     }
     if (req.method === "DELETE") {
 
+        const id = params.id as string;
 
+        if (!id) throw new AppError("Invalid Id")
+
+        await TagService.deleteDoc(user.uid, id)
+
+        return res.json({ message: "Tag Deleted" })
 
     }
 

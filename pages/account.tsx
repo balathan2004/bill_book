@@ -15,6 +15,8 @@ export default function Account() {
             <h1>Your Account</h1>
             <div className={styles.img_container}>
               <Image
+                height={64}
+                width={64}
                 alt="profile_image"
                 referrerPolicy="no-referrer"
                 src={userData?.profile_url}

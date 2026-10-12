@@ -19,8 +19,6 @@ async function handler(req: JwtRequest, res: NextApiResponse) {
 
     return res.json({ data: data })
 
-
-
 }
 
 
